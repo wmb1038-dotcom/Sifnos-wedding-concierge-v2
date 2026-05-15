@@ -90,21 +90,23 @@ function HeroCard({ phase, ceremonyCountdown, currentEvent, nextEvent, isOver })
 
   if (nextEvent) {
     const next = timeUntil(nextEvent.start)
-    const schedTitle = t(`wedding.schedule.${nextEvent.id}.title`) || nextEvent.title
-    const schedDetail = t(`wedding.schedule.${nextEvent.id}.detail`) || nextEvent.detail
-    return (
-      <section className="hero-card hero-next">
-        <p className="hero-eyebrow">{t('today.nextUp')}</p>
-        <h2 className="hero-title">{schedTitle}</h2>
-        <p className="hero-detail">{schedDetail}</p>
-        <p className="hero-time">
-          {formatRange(nextEvent.start, nextEvent.end)}
-          {next && next.totalMs < 1000*60*60*6 && (
-            <> · in {next.hours > 0 ? `${next.hours}${t('today.hr')} ` : ''}{next.minutes}{t('today.min')}</>
-          )}
-        </p>
-      </section>
-    )
+    if (next && next.totalMs < 1000 * 60 * 60 * 24) {
+      const schedTitle = t(`wedding.schedule.${nextEvent.id}.title`) || nextEvent.title
+      const schedDetail = t(`wedding.schedule.${nextEvent.id}.detail`) || nextEvent.detail
+      return (
+        <section className="hero-card hero-next">
+          <p className="hero-eyebrow">{t('today.nextUp')}</p>
+          <h2 className="hero-title">{schedTitle}</h2>
+          <p className="hero-detail">{schedDetail}</p>
+          <p className="hero-time">
+            {formatRange(nextEvent.start, nextEvent.end)}
+            {next.totalMs < 1000 * 60 * 60 * 6 && (
+              <> · in {next.hours > 0 ? `${next.hours}${t('today.hr')} ` : ''}{next.minutes}{t('today.min')}</>
+            )}
+          </p>
+        </section>
+      )
+    }
   }
 
   return (
