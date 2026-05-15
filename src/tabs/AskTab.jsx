@@ -2,19 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import { postChat } from '../lib/api.js'
-
-const STARTER_PROMPTS = [
-  { q: "What's the schedule for the wedding day?", label: 'Wedding schedule' },
-  { q: 'Where is the venue and how do I get there?', label: 'Venue &amp; directions' },
-  { q: "What's the dress code?", label: 'Dress code' },
-  { q: 'How do I get from Athens to Sifnos?', label: 'Getting to Sifnos' },
-  { q: 'Where do Caro and Chris recommend eating?', label: "Caro &amp; Chris's food picks" },
-  { q: 'Which beaches should I visit?', label: 'Best beaches' },
-  { q: 'What should I pack for early September on Sifnos?', label: 'What to pack' },
-  { q: 'Where should I stay on the island?', label: 'Where to stay' },
-]
+import { useT } from '../i18n/index.jsx'
 
 export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
+  const t = useT()
   const [history, setHistory] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -62,14 +53,14 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
       if (res.ok) {
         setHistory([{ role: 'assistant', content: res.reply }])
       } else {
-        setHistory([{ role: 'assistant', content: 'Hi! Ask me anything about the wedding or about Sifnos.' }])
+        setHistory([{ role: 'assistant', content: t('ask.fallbackGreeting') }])
       }
     } catch (err) {
-      setHistory([{ role: 'assistant', content: 'Hi! Ask me anything about the wedding or about Sifnos.' }])
+      setHistory([{ role: 'assistant', content: t('ask.fallbackGreeting') }])
     } finally {
       setSending(false)
     }
-  }, [rsvpCode])
+  }, [rsvpCode, t])
 
   const submitMessage = useCallback(async (text, context = null) => {
     if (!text.trim() || sending) return
@@ -85,16 +76,16 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
       if (res.ok) {
         setHistory([...newHistory, { role: 'assistant', content: res.reply }])
       } else if (res.status === 401) {
-        setHistory([...newHistory, { role: 'assistant', content: 'My access expired — refresh and re-enter your RSVP code.' }])
+        setHistory([...newHistory, { role: 'assistant', content: t('ask.accessExpired') }])
       } else {
-        setHistory([...newHistory, { role: 'assistant', content: `Sorry — I hit a snag (${res.error || 'unknown'}). Try once more?` }])
+        setHistory([...newHistory, { role: 'assistant', content: t('ask.snag', { error: res.error || 'unknown' }) }])
       }
     } catch (err) {
-      setHistory([...newHistory, { role: 'assistant', content: "Couldn't reach the concierge — check your connection." }])
+      setHistory([...newHistory, { role: 'assistant', content: t('ask.noConnection') }])
     } finally {
       setSending(false)
     }
-  }, [history, rsvpCode, sending])
+  }, [history, rsvpCode, sending, t])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -110,28 +101,30 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   }
 
   const reset = () => {
-    if (history.length > 1 && !confirm('Start a fresh conversation?')) return
+    if (history.length > 1 && !confirm(t('ask.confirmReset'))) return
     setHistory([])
     setHasGreeted(false)
   }
 
   const showStarters = history.length <= 1
 
+  const starters = t('ask.starters') || []
+
   return (
     <div className="page page-ask">
       <PageHeader
-        eyebrow="A small AI helper"
-        title="<span>Ask the</span> <em>concierge</em>"
-        subtitle="Wedding logistics, the island, restaurants, anything in between — type away."
+        eyebrow={t('ask.eyebrow')}
+        title={`<span>${t('ask.title1')}</span> <em>${t('ask.title2')}</em>`}
+        subtitle={t('ask.subtitle')}
       >
-        <button className="reset-btn" onClick={reset} aria-label="Start over" title="Start fresh">
-          <Icon name="ask" size={14} /> Start over
+        <button className="reset-btn" onClick={reset} aria-label={t('ask.startOver')} title={t('ask.startFresh')}>
+          <Icon name="ask" size={14} /> {t('ask.startOver')}
         </button>
       </PageHeader>
 
       <div className="messages" role="log" aria-live="polite">
         {history.map((msg, i) => (
-          <MessageBubble key={i} role={msg.role} content={msg.content} />
+          <MessageBubble key={i} role={msg.role} content={msg.content} t={t} />
         ))}
         {sending && <TypingIndicator />}
         <div ref={messagesEndRef} />
@@ -139,13 +132,14 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
 
       {showStarters && (
         <div className="suggestions">
-          {STARTER_PROMPTS.map(s => (
+          {starters.map(s => (
             <button
               key={s.q}
               className="chip"
               onClick={() => submitMessage(s.q)}
-              dangerouslySetInnerHTML={{ __html: s.label }}
-            />
+            >
+              {s.label}
+            </button>
           ))}
         </div>
       )}
@@ -156,11 +150,11 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
             ref={textareaRef}
             className="chat-input"
             rows={1}
-            placeholder="Ask anything — the schedule, beaches, food…"
+            placeholder={t('ask.placeholder')}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            aria-label="Type your question"
+            aria-label={t('ask.placeholder')}
           />
           <button
             type="submit"
@@ -173,21 +167,29 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
             </svg>
           </button>
         </div>
-        <p className="chat-fineprint">
-          AI can be wrong — for canonical info, check{' '}
-          <a href="https://www.caroychris.com" target="_blank" rel="noopener noreferrer">caroychris.com</a>.
-        </p>
+        <FinePrint t={t} />
       </form>
     </div>
   )
 }
 
-function MessageBubble({ role, content }) {
+function MessageBubble({ role, content, t }) {
   return (
     <div className={`bubble ${role === 'user' ? 'from-user' : 'from-bot'}`}>
-      <span className="sender">{role === 'user' ? 'you' : 'concierge'}</span>
+      <span className="sender">{role === 'user' ? t('ask.you') : t('ask.concierge')}</span>
       <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
     </div>
+  )
+}
+
+function FinePrint({ t }) {
+  const text = t('ask.fineprint') || ''
+  const parts = text.split('caroychris.com')
+  if (parts.length < 2) return <p className="chat-fineprint">{text}</p>
+  return (
+    <p className="chat-fineprint">
+      {parts[0]}<a href="https://www.caroychris.com" target="_blank" rel="noopener noreferrer">caroychris.com</a>{parts[1]}
+    </p>
   )
 }
 

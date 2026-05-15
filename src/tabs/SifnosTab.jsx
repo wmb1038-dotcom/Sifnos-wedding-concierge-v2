@@ -5,18 +5,20 @@ import IslandMap from '../components/IslandMap.jsx'
 import AppFooter from '../components/AppFooter.jsx'
 import { PLACES, CATEGORIES, COUPLES_MAP_URL } from '../data/places.js'
 import { useWeather } from '../lib/weather.js'
+import { useT } from '../i18n/index.jsx'
 
-const FILTER_GROUPS = [
-  { id: 'all', label: 'All' },
-  { id: 'restaurant', label: 'Eat' },
-  { id: 'beach', label: 'Beaches' },
-  { id: 'sunset', label: 'Sunsets' },
-  { id: 'pottery', label: 'Pottery' },
-  { id: 'village', label: 'Villages' },
-  { id: 'farm', label: 'Other' },  // farm + rental
+const FILTER_IDS = [
+  { id: 'all',        tKey: 'all' },
+  { id: 'restaurant', tKey: 'eat' },
+  { id: 'beach',      tKey: 'beaches' },
+  { id: 'sunset',     tKey: 'sunsets' },
+  { id: 'pottery',    tKey: 'pottery' },
+  { id: 'village',    tKey: 'villages' },
+  { id: 'farm',       tKey: 'other' },
 ]
 
 export default function SifnosTab({ onAsk }) {
+  const t = useT()
   const [activeFilter, setActiveFilter] = useState('all')
   const [selectedId, setSelectedId] = useState(null)
 
@@ -29,38 +31,34 @@ export default function SifnosTab({ onAsk }) {
   return (
     <div className="page page-sifnos">
       <PageHeader
-        eyebrow="The island"
-        title="<span>Caro & Chris's</span> <em>Sifnos</em>"
-        subtitle="The beaches, tavernas, sunset spots, and pottery workshops the couple wants you to find."
+        eyebrow={t('sifnos.eyebrow')}
+        title="<span>Caro &amp; Chris's</span> <em>Sifnos</em>"
+        subtitle={t('sifnos.subtitle')}
       />
 
-      {/* MAP */}
       <section className="card card-map">
         <IslandMap places={filtered} selectedId={selectedId} onSelect={setSelectedId} />
         <a className="btn-link map-external" href={COUPLES_MAP_URL} target="_blank" rel="noopener noreferrer">
-          <Icon name="map" size={14} /> Open Caro &amp; Chris's full Google map →
+          <Icon name="map" size={14} /> {t('sifnos.openMap')}
         </a>
       </section>
 
-      {/* FILTERS */}
       <div className="filter-bar" role="tablist" aria-label="Filter places">
-        {FILTER_GROUPS.map(group => (
+        {FILTER_IDS.map(group => (
           <button
             key={group.id}
             className={`filter-chip ${activeFilter === group.id ? 'active' : ''}`}
-            onClick={() => { setActiveFilter(group.id); setSelectedId(null); }}
+            onClick={() => { setActiveFilter(group.id); setSelectedId(null) }}
             role="tab"
             aria-selected={activeFilter === group.id}
           >
-            {group.label}
+            {t(`sifnos.filters.${group.tKey}`)}
           </button>
         ))}
       </div>
 
-      {/* BEACH-AWARE WEATHER STRIP */}
       {activeFilter === 'beach' && <MeltemiNote />}
 
-      {/* PLACE LIST */}
       <ul className="place-list">
         {filtered.map(place => (
           <PlaceCard
@@ -79,7 +77,13 @@ export default function SifnosTab({ onAsk }) {
 }
 
 function PlaceCard({ place, expanded, onClick, onAsk }) {
+  const t = useT()
   const cat = CATEGORIES[place.category]
+  const placeT = t(`sifnos.places.${place.id}`) || {}
+  const subtitle = placeT.subtitle || place.subtitle || ''
+  const description = placeT.description || place.description || ''
+  const tags = t('sifnos.tags') || {}
+
   return (
     <li id={`place-${place.id}`} className={`place-card ${expanded ? 'expanded' : ''}`}>
       <button className="place-card-head" onClick={onClick}>
@@ -91,16 +95,18 @@ function PlaceCard({ place, expanded, onClick, onAsk }) {
             {place.name}
             {place.couplePick && <span className="couple-pick-badge">Caro &amp; Chris</span>}
           </h3>
-          <p className="place-subtitle">{place.subtitle}</p>
+          <p className="place-subtitle">{subtitle}</p>
         </div>
         <span className="place-chevron" aria-hidden="true">{expanded ? '−' : '+'}</span>
       </button>
       {expanded && (
         <div className="place-card-body">
-          <p className="place-description" dangerouslySetInnerHTML={{ __html: place.description }} />
+          <p className="place-description">{description}</p>
           {place.tags && (
             <div className="place-tags">
-              {place.tags.map(t => <span key={t} className="tag">{t}</span>)}
+              {place.tags.map(tag => (
+                <span key={tag} className="tag">{tags[tag] || tag}</span>
+              ))}
             </div>
           )}
           <div className="place-actions">
@@ -128,19 +134,19 @@ function PlaceCard({ place, expanded, onClick, onAsk }) {
 }
 
 function MeltemiNote() {
+  const t = useT()
   const { weather } = useWeather()
   if (!weather) return null
   if (weather.isMeltemi) {
     return (
       <div className="weather-note inline">
-        Meltemi today &mdash; if a beach is exposed to the north (Vroulidia, Fikiada),
-        consider a south-facing one like Faros or Chrysopigi instead.
+        {t('sifnos.meltemiNote')}
       </div>
     )
   }
   return (
     <div className="weather-note inline subtle">
-      Wind from {weather.windDirection} at {weather.windKmh} km/h &mdash; most beaches should be pleasant today.
+      {t('sifnos.windNote', { direction: weather.windDirection, speed: weather.windKmh })}
     </div>
   )
 }

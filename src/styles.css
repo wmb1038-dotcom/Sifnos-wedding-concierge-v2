@@ -133,6 +133,36 @@ em { font-style: italic; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+.lang-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.lang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms, background 150ms;
+}
+.lang-pill:hover { border-color: var(--ink-soft); color: var(--ink); }
+.lang-pill.active {
+  border-color: var(--terra);
+  color: var(--terra);
+  background: color-mix(in srgb, var(--terra) 8%, transparent);
+}
+.lang-flag { font-size: 14px; }
+.lang-name { font-size: 11px; }
+
 .lock-mark {
   width: 56px; height: 56px;
   margin: 0 auto 14px;
@@ -375,6 +405,49 @@ em { font-style: italic; }
 }
 .app-footer-links a:hover,
 .app-footer-links button:hover { color: var(--ink-soft); }
+
+.lang-globe-wrap { position: relative; }
+.lang-globe-btn {
+  font-size: 14px;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 150ms;
+}
+.lang-globe-btn:hover { opacity: 1; }
+.lang-popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  overflow: hidden;
+  z-index: 200;
+}
+.lang-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms, color 100ms;
+}
+.lang-popover-item:hover { background: var(--bg); color: var(--ink); }
+.lang-popover-item.active { color: var(--terra); font-weight: 600; }
 
 /* ============================================================
    PAGE / TAB CONTAINER

@@ -1,17 +1,19 @@
 import Icon from './Icon.jsx'
+import { useT } from '../i18n/index.jsx'
 
-const TABS = [
-  { id: 'today',   label: 'Today',   icon: 'calendar' },
-  { id: 'wedding', label: 'Wedding', icon: 'heart' },
-  { id: 'sifnos',  label: 'Sifnos',  icon: 'map' },
-  { id: 'travel',  label: 'Travel',  icon: 'bag' },
-  { id: 'ask',     label: 'Ask',     icon: 'chat' },
+const TAB_IDS = [
+  { id: 'today',   icon: 'calendar' },
+  { id: 'wedding', icon: 'heart' },
+  { id: 'sifnos',  icon: 'map' },
+  { id: 'travel',  icon: 'bag' },
+  { id: 'ask',     icon: 'chat' },
 ]
 
 export default function TabBar({ activeTab, onChange }) {
+  const t = useT()
   return (
     <nav className="tab-bar" role="tablist" aria-label="Main navigation">
-      {TABS.map(tab => (
+      {TAB_IDS.map(tab => (
         <button
           key={tab.id}
           className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
@@ -20,7 +22,7 @@ export default function TabBar({ activeTab, onChange }) {
           aria-selected={activeTab === tab.id}
         >
           <Icon name={tab.icon} size={22} />
-          <span className="tab-label">{tab.label}</span>
+          <span className="tab-label">{t(`tabs.${tab.id}`)}</span>
         </button>
       ))}
     </nav>

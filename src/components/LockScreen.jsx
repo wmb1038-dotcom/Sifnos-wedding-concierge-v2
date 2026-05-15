@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { TAGLINE, WEDDING_WEBSITE } from '../data/wedding.js'
 import PrivacyModal from './PrivacyModal.jsx'
+import { useLocale, LOCALES } from '../i18n/index.jsx'
 
 const CONSENT_KEY = 'sifnos_consent_ts'
 
 export default function LockScreen({ onUnlock, unlocking, error }) {
+  const { t, locale, setLocale } = useLocale()
   const [code, setCode] = useState('')
   const [consentGiven, setConsentGiven] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
@@ -25,11 +27,26 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
     setPrivacyOpen(true)
   }
 
-  const closePrivacy = () => setPrivacyOpen(false)
-
   return (
     <section className="lock-screen">
       <div className="lock-card">
+
+        {/* Language picker */}
+        <nav className="lang-picker" aria-label="Language">
+          {LOCALES.map(loc => (
+            <button
+              key={loc.code}
+              className={`lang-pill ${locale === loc.code ? 'active' : ''}`}
+              onClick={() => setLocale(loc.code)}
+              aria-pressed={locale === loc.code}
+              title={loc.label}
+            >
+              <span className="lang-flag">{loc.flag}</span>
+              <span className="lang-name">{loc.label}</span>
+            </button>
+          ))}
+        </nav>
+
         <div className="lock-mark" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 50 H50 V32 L32 18 L14 32 Z" />
@@ -39,17 +56,13 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
           </svg>
         </div>
 
-        <p className="eyebrow">Sifnos · 4 September 2026</p>
+        <p className="eyebrow">{t('lock.eyebrow')}</p>
         <h1 className="lock-title">Caro<br/>&amp; <em>Chris</em></h1>
         <p className="greek-tagline" lang="el">{TAGLINE.greek}</p>
-        <p className="lock-body">
-          A companion for your trip to Sifnos &mdash;
-          the schedule, the island, the best taverna,
-          and a friendly concierge ready when you are.
-        </p>
+        <p className="lock-body">{t('lock.body')}</p>
 
         <form className="lock-form" onSubmit={handleSubmit} autoComplete="off">
-          <label htmlFor="rsvp-input" className="lock-label">Enter your RSVP code</label>
+          <label htmlFor="rsvp-input" className="lock-label">{t('lock.label')}</label>
           <div className="lock-input-row">
             <input
               id="rsvp-input"
@@ -58,7 +71,7 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
               inputMode="text"
               autoCapitalize="characters"
               spellCheck="false"
-              placeholder="from your invitation"
+              placeholder={t('lock.placeholder')}
               value={code}
               onChange={(e) => setCode(e.target.value)}
               disabled={unlocking}
@@ -70,7 +83,7 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
               className="lock-submit"
               disabled={!canSubmit}
               aria-label="Unlock"
-              title={canSubmit ? undefined : 'Tick the box and enter your code to continue'}
+              title={canSubmit ? undefined : t('lock.buttonTitle')}
             >
               {unlocking ? (
                 <svg className="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -94,20 +107,17 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
               disabled={unlocking}
             />
             <label htmlFor="consent-checkbox">
-              I&rsquo;ve read the{' '}
-              <a href="#privacy" onClick={openPrivacy}>privacy notice</a>
-              {' '}and agree that my messages may be sent to Google&rsquo;s Gemini API to generate replies.
-              I can withdraw consent any time by closing the app.
+              {t('lock.consent.before')}<a href="#privacy" onClick={openPrivacy}>{t('lock.consent.linkText')}</a>{t('lock.consent.after')}
             </label>
           </div>
 
           {error && <p className="lock-error" role="alert">{error}</p>}
         </form>
 
-        {privacyOpen && <PrivacyModal onClose={closePrivacy} />}
+        {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
 
         <p className="lock-fineprint">
-          For canonical info, visit <a href={WEDDING_WEBSITE} target="_blank" rel="noopener noreferrer">caroychris.com</a>.
+          {t('lock.fineprint')} <a href={WEDDING_WEBSITE} target="_blank" rel="noopener noreferrer">caroychris.com</a>.
         </p>
       </div>
     </section>
