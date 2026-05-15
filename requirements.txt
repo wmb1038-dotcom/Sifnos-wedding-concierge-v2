@@ -1,0 +1,3 @@
+# The /api/chat.py function uses only the Python standard library
+# (urllib.request, json, os, http.server). No external packages required.
+# Vercel needs this file to exist so it knows this is a Python function.
