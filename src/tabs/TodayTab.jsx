@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import AppFooter from '../components/AppFooter.jsx'
 import { SCHEDULE, VENUE, TAGLINE } from '../data/wedding.js'
 import { timeUntil, currentEvent, nextEvent, weddingIsOver, formatRange, tripPhase } from '../lib/schedule.js'
 import { useWeather } from '../lib/weather.js'
+import { CULTURE } from '../data/culture.js'
 import { useT } from '../i18n/index.jsx'
 
 export default function TodayTab({ onAsk, setTab }) {
@@ -53,6 +54,8 @@ export default function TodayTab({ onAsk, setTab }) {
       </section>
 
       <DailySuggestionCard phase={phase} onAsk={onAsk} />
+
+      <DidYouKnowCard onAsk={onAsk} />
 
       <p className="page-tagline" lang="el">{TAGLINE.greek}</p>
 
@@ -208,6 +211,33 @@ function QuickAction({ icon, label, onClick, href, tone }) {
       <Icon name={icon} size={20} />
       <span>{label}</span>
     </button>
+  )
+}
+
+function DidYouKnowCard({ onAsk }) {
+  const t = useT()
+  const [expanded, setExpanded] = useState(false)
+  const card = useMemo(() => {
+    const day = Math.floor(Date.now() / (1000 * 60 * 60 * 24))
+    return CULTURE[day % CULTURE.length]
+  }, [])
+  const cardT = t(`sifnos.culture.cards.${card.id}`) || {}
+  const oneLiner = cardT.oneLiner || card.oneLiner
+
+  return (
+    <section className="card card-didyouknow">
+      <p className="card-eyebrow">{t('sifnos.culture.didYouKnow')}</p>
+      <p className="card-body">{oneLiner}</p>
+      {expanded && <p className="didyouknow-body">{card.body}</p>}
+      <div className="didyouknow-actions">
+        <button className="btn-secondary small" onClick={() => setExpanded(e => !e)}>
+          {expanded ? `↑ ${t('sifnos.culture.readLess')}` : `↓ ${t('sifnos.culture.readMore')}`}
+        </button>
+        <button className="card-cta" onClick={() => onAsk(`Tell me more about: ${card.title}`, `culture-${card.id}`)}>
+          {t('sifnos.culture.askAbout')} <Icon name="chat" size={14} />
+        </button>
+      </div>
+    </section>
   )
 }
 

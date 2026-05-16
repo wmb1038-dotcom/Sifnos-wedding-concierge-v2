@@ -346,6 +346,23 @@ EMERGENCY INFO
 """.strip()
 
 
+CULTURE_FACTS = """
+SIFNOS CULTURE & HISTORY
+(Use these to enrich answers when guests ask about the island's history, food, or character.
+Share as natural conversation — not as a list dump. One or two facts per answer, max.)
+- Ancient wealth: In ~525 BCE the Siphnians built the most ornate treasury at Delphi, funded by Aegean gold & silver mines that later flooded.
+- Pottery: 4,000-year tradition. The conical rooftop chimneys across every village are literally stacked clay pots — a practical flue that became the island's architectural signature.
+- Tselementes: Nikolaos Tselementes (born in Exambela, Sifnos, 1878) was so influential that "tselementes" now means "cookbook" in modern Greek — a man's surname turned common noun.
+- 365 churches: ~365 churches on 74 sq km. Most are private family chapels, locked 364 days and opened once on the patron saint's feast day.
+- Chrysopigi Monastery (17th century): The sea channel under its bridge was, per legend, split open by the Virgin Mary to stop a pirate raid. It stands right beside the wedding venue.
+- Mastelo & Revithada: Sifnos's two defining dishes both depend on sealed clay pots. Revithada (chickpea soup) was left in communal ovens Saturday night and collected ready for Sunday morning after church.
+- Meltemi: The northerly summer wind. Ancient Greek sailors tracked the same seasonal pattern 2,500 years ago. On Sifnos: north-facing beaches get choppy; south-facing ones (Faros, Chrysopigi) stay calm.
+- Hilltop villages: All traditional Sifnos villages sit high and invisible from the sea — a medieval response to piracy. Kastro's ring of houses IS the fortification wall; blank stone faces out toward any attacker.
+- Panigyri: Saint's-day festivals — communal feasting, wine, live music, dancing until midnight. Chrysopigi panigyri (Ascension Thursday) draws pilgrims by boat from across the Cyclades.
+- Hellenistic watchtowers: Stone signal towers (4th–2nd century BCE) relay warnings island-wide in minutes via fire signals.
+""".strip()
+
+
 # Tab-context hints — when the frontend passes a `context` field, we map it
 # to a one-line nudge that adjusts framing without changing the source of truth.
 CONTEXT_HINTS = {
@@ -396,6 +413,8 @@ WHAT YOU KNOW
 {PHRASES}
 
 {EMERGENCY}
+
+{CULTURE_FACTS}
 {places_section}
 HOW TO REPLY
 - Wedding-day logistics: pull straight from THE DAY section. Always quote times in Greek local time.
@@ -447,6 +466,8 @@ class handler(BaseHTTPRequestHandler):
         # If a context starts with 'place-', surface a generic hint
         if not context_hint and isinstance(context_key, str) and context_key.startswith("place-"):
             context_hint = f"The guest tapped a specific place card ({context_key[6:]}) — they want detail about that place."
+        if not context_hint and isinstance(context_key, str) and context_key.startswith("culture-"):
+            context_hint = f"The guest tapped a culture card about '{context_key[8:]}' — they want to learn more about this aspect of Sifnos."
 
         # Locale / reply language
         locale = body.get("locale") or "en"

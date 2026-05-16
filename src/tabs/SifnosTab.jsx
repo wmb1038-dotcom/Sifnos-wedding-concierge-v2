@@ -1,12 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import IslandMap from '../components/IslandMap.jsx'
 import AppFooter from '../components/AppFooter.jsx'
 import sifnosData from '../data/sifnos-places.json'
 import { PLACES as CURATED_PLACES, CATEGORIES, COUPLES_MAP_URL } from '../data/places.js'
+import { CULTURE } from '../data/culture.js'
 import { useWeather } from '../lib/weather.js'
 import { useT } from '../i18n/index.jsx'
+
+const CULTURE_CATS = ['all', 'history', 'food', 'religion', 'craft', 'nature', 'social']
 
 // ---------------------------------------------------------------------------
 // Data merging
@@ -142,6 +145,8 @@ export default function SifnosTab({ onAsk }) {
         subtitle={t('sifnos.subtitle')}
       />
 
+      <CultureSection onAsk={onAsk} />
+
       <section className="card card-map">
         <IslandMap places={filtered} selectedId={selectedId} onSelect={setSelectedId} />
         <a className="btn-link map-external" href={COUPLES_MAP_URL} target="_blank" rel="noopener noreferrer">
@@ -263,6 +268,107 @@ function PlaceCard({ place, expanded, onClick, onAsk }) {
         </div>
       )}
     </li>
+  )
+}
+
+function CultureSection({ onAsk }) {
+  const t = useT()
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [openCard, setOpenCard] = useState(null)
+
+  const filtered = activeCategory === 'all'
+    ? CULTURE
+    : CULTURE.filter(c => c.category === activeCategory)
+
+  const catT = t('sifnos.culture.filters') || {}
+
+  return (
+    <section className="culture-section">
+      <div className="culture-header">
+        <p className="culture-eyebrow">{t('sifnos.culture.sectionTitle')}</p>
+        <p className="culture-subtitle">{t('sifnos.culture.sectionSubtitle')}</p>
+      </div>
+
+      <div className="culture-filter-bar">
+        {CULTURE_CATS.map(id => (
+          <button
+            key={id}
+            className={`culture-chip ${activeCategory === id ? 'active' : ''}`}
+            onClick={() => setActiveCategory(id)}
+          >
+            {catT[id] || id}
+          </button>
+        ))}
+      </div>
+
+      <div className="culture-carousel">
+        {filtered.map(card => {
+          const cardT = t(`sifnos.culture.cards.${card.id}`) || {}
+          return (
+            <button key={card.id} className="culture-card" onClick={() => setOpenCard(card)}>
+              <span className="culture-card-cat">{catT[card.category] || card.category}</span>
+              <h3 className="culture-card-title">{cardT.title || card.title}</h3>
+              <p className="culture-card-liner">{cardT.oneLiner || card.oneLiner}</p>
+            </button>
+          )
+        })}
+      </div>
+
+      {openCard && (
+        <CultureSheet
+          card={openCard}
+          onClose={() => setOpenCard(null)}
+          onAsk={onAsk}
+        />
+      )}
+    </section>
+  )
+}
+
+function CultureSheet({ card, onClose, onAsk }) {
+  const t = useT()
+  const cardT = t(`sifnos.culture.cards.${card.id}`) || {}
+  const catT = t('sifnos.culture.filters') || {}
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  return (
+    <>
+      <div className="culture-backdrop" onClick={onClose} />
+      <div className="culture-sheet" role="dialog" aria-modal="true">
+        <button className="culture-sheet-close" onClick={onClose} aria-label="Close">✕</button>
+        <p className="culture-sheet-cat">{catT[card.category] || card.category}</p>
+        <h2 className="culture-sheet-title">{cardT.title || card.title}</h2>
+        <p className="culture-sheet-body">{card.body}</p>
+        {card.sources?.length > 0 && (
+          <div className="culture-sheet-sources">
+            <p className="culture-sources-label">{t('sifnos.culture.sources')}</p>
+            <ul className="culture-sources-list">
+              {card.sources.map((s, i) => (
+                <li key={i}>
+                  {s.url
+                    ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>
+                    : s.label
+                  }
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <button
+          className="culture-sheet-ask"
+          onClick={() => {
+            onAsk(`Tell me more about: ${card.title}`, `culture-${card.id}`)
+            onClose()
+          }}
+        >
+          {t('sifnos.culture.askAbout')}
+        </button>
+      </div>
+    </>
   )
 }
 

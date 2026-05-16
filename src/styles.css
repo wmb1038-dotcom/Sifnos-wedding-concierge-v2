@@ -1226,6 +1226,154 @@ em { font-style: italic; }
   margin: 12px 0 4px;
 }
 
+/* Culture & History section */
+.culture-section {
+  margin-bottom: 20px;
+}
+.culture-header {
+  padding: 0 0 10px;
+}
+.culture-eyebrow {
+  font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--terra-dark); margin: 0 0 4px;
+}
+.culture-subtitle {
+  font-size: 13px; color: var(--ink-soft); margin: 0;
+}
+.culture-filter-bar {
+  display: flex; gap: 6px;
+  overflow-x: auto;
+  padding: 0 0 8px;
+  scrollbar-width: none;
+}
+.culture-filter-bar::-webkit-scrollbar { display: none; }
+.culture-chip {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+  white-space: nowrap;
+}
+.culture-chip:hover { border-color: var(--terra); color: var(--terra); }
+.culture-chip.active { background: var(--terra); border-color: var(--terra); color: white; }
+
+.culture-carousel {
+  display: flex; gap: 12px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  scrollbar-width: none;
+}
+.culture-carousel::-webkit-scrollbar { display: none; }
+
+.culture-card {
+  flex-shrink: 0; width: 240px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.culture-card:hover {
+  border-color: var(--terra-soft);
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+.culture-card-cat {
+  font-family: var(--sans); font-size: 10px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--terra);
+}
+.culture-card-title {
+  font-family: var(--serif); font-size: 15px; font-weight: 600;
+  color: var(--ink); line-height: 1.3; margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.culture-card-liner {
+  font-size: 12px; color: var(--ink-soft); line-height: 1.45; margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Culture slide-up sheet */
+.culture-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200;
+}
+.culture-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  max-height: 80vh; overflow-y: auto;
+  background: var(--paper);
+  border-radius: 16px 16px 0 0;
+  padding: 20px 20px 40px;
+  z-index: 201;
+  animation: sheet-up .22s ease;
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.culture-sheet-close {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: var(--ink-soft); padding: 4px 8px;
+}
+.culture-sheet-cat {
+  font-family: var(--sans); font-size: 10px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--terra);
+  margin: 0 0 6px;
+}
+.culture-sheet-title {
+  font-family: var(--serif); font-size: 20px; font-weight: 700;
+  color: var(--ink); line-height: 1.25; margin: 0 0 14px;
+}
+.culture-sheet-body {
+  font-size: 14px; color: var(--ink); line-height: 1.65; margin: 0 0 16px;
+}
+.culture-sheet-sources {
+  border-top: 1px solid var(--line); padding-top: 12px; margin-bottom: 16px;
+}
+.culture-sources-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--ink-faint); margin: 0 0 6px;
+}
+.culture-sources-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.culture-sources-list li { font-size: 12px; color: var(--ink-soft); }
+.culture-sources-list a { color: var(--terra-dark); text-decoration: underline; }
+.culture-sheet-ask {
+  display: block; width: 100%;
+  padding: 12px; text-align: center;
+  background: var(--ink); color: var(--paper);
+  border: none; border-radius: var(--radius);
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.culture-sheet-ask:hover { opacity: .85; }
+
+/* Did You Know card (Today tab) */
+.card-didyouknow {
+  background: linear-gradient(135deg, var(--paper) 0%, var(--paper-soft) 100%);
+  border-color: var(--terra-soft);
+}
+.card-didyouknow .card-eyebrow { color: var(--terra-dark); }
+.didyouknow-body {
+  font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+  margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--line);
+}
+.didyouknow-actions {
+  display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap;
+}
+.didyouknow-actions .card-cta { margin-top: 0; }
+
 /* ============================================================
    TRAVEL TAB
    ============================================================ */
