@@ -453,6 +453,10 @@ export default function IslandMap({ places, selectedId, onSelect }) {
                 if (didPanRef.current) return
                 onSelect(p.id === selectedId ? null : p.id)
               }}
+              onTouchEnd={() => {
+                if (didPanRef.current) return
+                onSelect(p.id === selectedId ? null : p.id)
+              }}
               onMouseEnter={() => setHoveredId(p.id)}
               onMouseLeave={() => setHoveredId(null)}
               filter="url(#pin-drop)"
