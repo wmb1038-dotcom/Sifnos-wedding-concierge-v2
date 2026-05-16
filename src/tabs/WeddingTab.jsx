@@ -48,6 +48,10 @@ export default function WeddingTab({ onAsk }) {
         <p className="card-body">{VENUE.address}</p>
         <p className="card-body">{t('wedding.venueBeachDesc')}</p>
         <p className="card-body subtle">{t('wedding.venueParking')}</p>
+        <p className="card-body">
+          <Icon name="phone" size={14} />{' '}
+          <a href={`tel:${VENUE.phone}`}>{VENUE.phoneDisplay}</a>
+        </p>
         <div className="card-actions">
           <a className="btn-primary" href={VENUE.mapsUrl} target="_blank" rel="noopener noreferrer">
             <Icon name="map" size={16} /> {t('wedding.openInMaps')}
@@ -73,8 +77,8 @@ export default function WeddingTab({ onAsk }) {
         <h2 className="card-title">{t('wedding.busTitle')}</h2>
         <p className="card-body">{t('wedding.busDesc')}</p>
         <ul className="bullet-list">
-          <li><strong>Apollonia central</strong> &mdash; {t('wedding.busStopApolonia')}</li>
-          <li><strong>Platis Gialos central square</strong> &mdash; {t('wedding.busStopPlatisGialos')}</li>
+          <li><strong>Apollonia central</strong> &mdash; {t('wedding.busStopApolonia')} <span className="bus-travel-time">&middot; est. 25&nbsp;min to venue</span></li>
+          <li><strong>Platis Gialos central square</strong> &mdash; {t('wedding.busStopPlatisGialos')} <span className="bus-travel-time">&middot; est. 10&nbsp;min to venue</span></li>
           <li><strong>Tsapis Tavern (return)</strong> &mdash; {t('wedding.busStopTsapis')}</li>
         </ul>
         <a className="btn-link" href="https://www.caroychris.com/busroute" target="_blank" rel="noopener noreferrer">

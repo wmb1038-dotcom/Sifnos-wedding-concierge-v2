@@ -177,6 +177,7 @@ THE WEDDING
 - Couple: Carolina ("Caro") and Christina ("Chris"). She/her for both.
 - Date: Friday, 4 September 2026
 - Venue: Tsapis Tavern, on Apokofto beach in Chrysopigi, Sifnos, Greece
+- Venue phone: tel:+302284071272 (+30 2284 071 272)
 - Venue map: https://maps.app.goo.gl/s81bVCsNfUDx51xi6
 - Tagline: "Ζήτω η αγάπη!" — Long live love.
 - Website: https://www.caroychris.com

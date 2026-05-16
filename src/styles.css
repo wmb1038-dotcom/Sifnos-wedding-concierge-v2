@@ -672,6 +672,7 @@ em { font-style: italic; }
   line-height: 1.55;
 }
 .bullet-list li { margin: 6px 0; }
+.bus-travel-time { font-size: 13px; color: var(--ink-faint); font-style: italic; }
 
 .subhead {
   font-family: var(--serif);

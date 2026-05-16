@@ -51,6 +51,8 @@ export const SCHEDULE = [
 export const VENUE = {
   name: 'Tsapis Tavern',
   address: 'Chrysopigi 840 03, Sifnos, Greece',
+  phone: '+302284071272',
+  phoneDisplay: '+30 2284 071 272',
   beach: 'Apokofto Beach',
   lat: 36.9492,   // approximate — for map centering
   lng: 24.7488,
