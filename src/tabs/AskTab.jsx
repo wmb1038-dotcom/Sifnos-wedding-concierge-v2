@@ -9,10 +9,14 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const [history, setHistory] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [throttled, setThrottled] = useState(false)
   const [hasGreeted, setHasGreeted] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const textareaRef = useRef(null)
+  const throttleTimer = useRef(null)
+
+  useEffect(() => () => clearTimeout(throttleTimer.current), [])
 
   // First-time greeting
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   }, [rsvpCode, t])
 
   const submitMessage = useCallback(async (text, context = null) => {
-    if (!text.trim() || sending) return
+    if (!text.trim() || sending || throttled) return
 
     // Build the new history immediately (so the user message renders)
     const newHistory = [...history, { role: 'user', content: text.trim() }]
@@ -78,14 +82,17 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
       } else if (res.status === 401) {
         setHistory([...newHistory, { role: 'assistant', content: t('ask.accessExpired') }])
       } else {
-        setHistory([...newHistory, { role: 'assistant', content: t('ask.snag', { error: res.error || 'unknown' }) }])
+        setHistory([...newHistory, { role: 'assistant', content: res.error || t('ask.snag', { error: 'unknown' }) }])
       }
     } catch (err) {
       setHistory([...newHistory, { role: 'assistant', content: t('ask.noConnection') }])
     } finally {
       setSending(false)
+      setThrottled(true)
+      clearTimeout(throttleTimer.current)
+      throttleTimer.current = setTimeout(() => setThrottled(false), 2000)
     }
-  }, [history, rsvpCode, sending, t])
+  }, [history, rsvpCode, sending, throttled, t])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -159,7 +166,7 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
           <button
             type="submit"
             className="chat-send"
-            disabled={!input.trim() || sending}
+            disabled={!input.trim() || sending || throttled}
             aria-label="Send"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">

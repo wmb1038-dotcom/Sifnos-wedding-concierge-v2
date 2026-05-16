@@ -26,6 +26,7 @@ import datetime
 import json
 import os
 import pathlib
+import time
 import urllib.request
 import urllib.error
 
@@ -491,28 +492,42 @@ class handler(BaseHTTPRequestHandler):
             },
         }
 
-        try:
-            req = urllib.request.Request(
-                url,
-                data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
-                method="POST",
-            )
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+
+        data = None
+        _last_status = None
+        for _attempt in range(3):
             try:
-                err_body = e.read().decode("utf-8")
-            except Exception:
-                err_body = "<no body>"
-            print(f"Gemini HTTPError {e.code}: {err_body[:500]}")
-            return self._error(502, f"Concierge upstream error ({e.code}).")
-        except urllib.error.URLError as e:
-            print(f"Gemini URLError: {e}")
-            return self._error(504, "Concierge timed out — try again?")
-        except Exception as e:
-            print(f"Gemini unexpected: {e}")
-            return self._error(500, "Concierge hiccup.")
+                with urllib.request.urlopen(req, timeout=25) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                break
+            except urllib.error.HTTPError as exc:
+                try:
+                    err_body = exc.read().decode("utf-8", errors="replace")
+                except Exception:
+                    err_body = "<no body>"
+                print(f"Gemini HTTPError {exc.code} (attempt {_attempt + 1}/3): {err_body[:500]}")
+                _last_status = exc.code
+                if exc.code in (429, 500, 502, 503) and _attempt < 2:
+                    time.sleep(2 ** _attempt)  # 1 s then 2 s
+                    continue
+                break
+            except urllib.error.URLError as exc:
+                print(f"Gemini URLError: {exc}")
+                return self._error(504, "Couldn't reach the concierge — check your connection and try again.")
+            except Exception as exc:
+                print(f"Gemini unexpected: {exc}")
+                return self._error(500, "Concierge hiccup.")
+
+        if data is None:
+            if _last_status == 429:
+                return self._error(429, "The concierge is a little overwhelmed right now — give it a minute and try again.")
+            return self._error(502, "The concierge is having a moment. Try again in a few seconds.")
 
         reply = self._extract_text(data) or "Sorry — I didn't catch that. Try asking again?"
         return self._json(200, {"reply": reply})
