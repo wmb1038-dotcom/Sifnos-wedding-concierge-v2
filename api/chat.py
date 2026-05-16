@@ -22,10 +22,146 @@ Set env vars:
 """
 
 from http.server import BaseHTTPRequestHandler
+import datetime
 import json
 import os
+import pathlib
 import urllib.request
 import urllib.error
+
+
+# =============================================================================
+# Sifnos places — loaded once at startup from the pre-fetched JSON.
+# Injected into every system prompt so the AI can give accurate, rated recs.
+# =============================================================================
+
+_SIFNOS_PLACES: list = []
+_SIFNOS_FETCHED_AT: str = ""
+try:
+    _places_path = pathlib.Path(__file__).parent.parent / "src" / "data" / "sifnos-places.json"
+    with open(_places_path, encoding="utf-8") as _f:
+        _places_data = json.load(_f)
+    _SIFNOS_PLACES = _places_data.get("places", [])
+    _SIFNOS_FETCHED_AT = (_places_data.get("fetched_at") or "")[:10]
+except (FileNotFoundError, json.JSONDecodeError):
+    pass
+
+_ATHENS_TZ = datetime.timezone(datetime.timedelta(hours=3))
+_PRICE_LABEL = {0: "free", 1: "€", 2: "€€", 3: "€€€", 4: "€€€€"}
+
+
+def _is_open_now(periods: list, athens_dt: datetime.datetime) -> bool | None:
+    """Return True/False/None (unknown) based on Google Places periods."""
+    if not periods:
+        return None
+    gday = (athens_dt.weekday() + 1) % 7  # Google: 0=Sun; Python Mon=0
+    now_mins = athens_dt.hour * 60 + athens_dt.minute
+    for p in periods:
+        o = p.get("open") or {}
+        c = p.get("close") or {}
+        if "day" not in o:
+            continue
+        oday = o["day"]
+        open_mins = o.get("hour", 0) * 60 + o.get("minute", 0)
+        if "day" not in c:
+            if oday == gday:
+                return True
+            continue
+        cday = c["day"]
+        close_mins = c.get("hour", 0) * 60 + c.get("minute", 0)
+        if oday == cday:
+            if gday == oday and open_mins <= now_mins < close_mins:
+                return True
+        else:
+            if gday == oday and now_mins >= open_mins:
+                return True
+            if gday == cday and now_mins < close_mins:
+                return True
+    return False
+
+
+def _build_places_block(athens_dt: datetime.datetime | None = None) -> str:
+    """Compact places block for the system prompt. ~1000–1200 tokens."""
+    if not _SIFNOS_PLACES:
+        return ""
+    if athens_dt is None:
+        athens_dt = datetime.datetime.now(_ATHENS_TZ)
+
+    def _fmt(p: dict, is_pick: bool) -> tuple[str, float]:
+        rating = p.get("rating")
+        count = p.get("ratingCount")
+        price_lv = p.get("priceLevel")
+        periods = (p.get("openingHours") or {}).get("periods") or []
+        open_now = _is_open_now(periods, athens_dt)
+        parts = [("[PICK] " if is_pick else "") + p.get("name", "?")]
+        if price_lv is not None:
+            lbl = _PRICE_LABEL.get(price_lv, "")
+            if lbl:
+                parts.append(lbl)
+        if rating is not None:
+            r = f"{rating}*"
+            if count:
+                r += f" ({count})"
+            parts.append(r)
+        if open_now is True:
+            parts.append("OPEN")
+        elif open_now is False:
+            parts.append("CLOSED")
+        return " | ".join(x for x in parts if x), rating or 0
+
+    picks: list[str] = []
+    beaches: list[tuple[str, float]] = []
+    monasteries: list[tuple[str, float]] = []
+    villages: list[str] = []
+    farms: list[str] = []
+    restaurants: list[tuple[str, float]] = []
+    others: list[tuple[str, float]] = []
+
+    for p in _SIFNOS_PLACES:
+        if p.get("_stale"):
+            continue
+        cat = p.get("category", "other")
+        is_pick = bool(p.get("couplePick"))
+        line, rating = _fmt(p, is_pick)
+        if is_pick:
+            picks.append(line)
+        elif cat == "beach":
+            beaches.append((line, rating))
+        elif cat == "monastery":
+            monasteries.append((line, rating))
+        elif cat == "village":
+            villages.append(line)
+        elif cat in ("farm", "rental"):
+            farms.append(line)
+        elif cat == "restaurant":
+            restaurants.append((line, rating))
+        else:
+            others.append((line, rating))
+
+    def _sec(title: str, items: list[str]) -> str:
+        return f"{title}\n" + "\n".join(items) if items else ""
+
+    def _sec_s(title: str, pairs: list[tuple[str, float]], limit: int | None = None) -> str:
+        rows = [x[0] for x in sorted(pairs, key=lambda x: x[1], reverse=True)]
+        return _sec(title, rows[:limit] if limit else rows)
+
+    sections = [
+        _sec("COUPLE PICKS -- lead with these", picks),
+        _sec_s("BEACHES", beaches),
+        _sec_s("MONASTERIES & CHURCHES", monasteries, 8),
+        _sec("VILLAGES", villages),
+        _sec("FARMS & RENTALS", farms),
+        _sec_s("OTHER RESTAURANTS (top-rated)", restaurants, 25),
+        _sec_s("OTHER PLACES", others, 10),
+    ]
+    body = "\n\n".join(s for s in sections if s)
+    return (
+        f"SIFNOS PLACES (Google Places, fetched {_SIFNOS_FETCHED_AT})\n"
+        'Rules: lead answers with COUPLE PICKS; cite ratings as "X.X on Google"; '
+        "OPEN/CLOSED reflects current Athens time; "
+        'say "I don\'t have details on that one" for unlisted places.\n\n'
+        + body
+    )
 
 
 # =============================================================================
@@ -238,6 +374,9 @@ def build_system_prompt(context_hint: str = "", locale: str = "en") -> str:
         else ""
     )
 
+    places_block = _build_places_block()
+    places_section = f"\n{places_block}\n" if places_block else ""
+
     base = f"""You are the wedding concierge for Carolina ("Caro") and Christina ("Chris")'s wedding on Sifnos, Greece, on Friday 4 September 2026. You help their guests with anything related to the wedding, the island, and the trip.
 
 VOICE
@@ -256,7 +395,7 @@ WHAT YOU KNOW
 {PHRASES}
 
 {EMERGENCY}
-
+{places_section}
 HOW TO REPLY
 - Wedding-day logistics: pull straight from THE DAY section. Always quote times in Greek local time.
 - "Where should we eat?" — lead with Caro & Chris's picks, then explain.

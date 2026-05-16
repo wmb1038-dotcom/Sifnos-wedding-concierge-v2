@@ -23,6 +23,7 @@ export default function PrivacyModal({ onClose }) {
           <P1 text={t('privacy.p1')} />
           <p>{t('privacy.p2')}</p>
           <p>{t('privacy.p3')}</p>
+          <p>{t('privacy.p4')}</p>
         </div>
         <button className="privacy-modal-close" onClick={onClose}>{t('privacy.close')}</button>
       </div>

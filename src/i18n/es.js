@@ -36,6 +36,7 @@ export default {
     p1: 'Este concierge funciona con Gemini AI de Google — muy útil, pero no siempre exacto. Para lo que importa, consulta caroychris.com o escribe directamente a Caro y Chris.',
     p2: 'Sin análisis, sin mensajes guardados, sin rastreo. Tus preguntas se envían a la API Gemini de Google para generar respuestas; Vercel, el proveedor de alojamiento, conserva registros estándar del servidor durante aproximadamente 24 horas.',
     p3: 'Hecho con amor para los amigos de Caro y Chris — no es un producto comercial. Úsalo con cuidado.',
+    p4: 'Los datos de lugares en la pestaña Sifnos provienen de Google Places API. Estos datos fueron obtenidos una sola vez por el creador de la app antes del lanzamiento — tu uso de esta app NO envía ningún dato tuyo a Google. Google no es un procesador de datos en tiempo real para esta app.',
     close: 'Entendido',
   },
 
@@ -142,6 +143,10 @@ export default {
     eyebrow: 'La isla',
     subtitle: 'Las playas, tavernas, lugares para el atardecer y talleres de cerámica que la pareja quiere que descubras.',
     openMap: 'Abrir el mapa completo de Caro y Chris en Google →',
+    picksOnly: 'Selecciones de Caro & Chris',
+    openNow: 'Abierto ahora',
+    closed: 'Cerrado',
+    googleAttribution: 'Datos de lugares y valoraciones de Google',
     filters: { all: 'Todos', eat: 'Comer', beaches: 'Playas', sunsets: 'Atardeceres', pottery: 'Cerámica', villages: 'Pueblos', other: 'Otro' },
     categories: { venue: 'Lugar de la boda', restaurant: 'Restaurante', beach: 'Playa', sunset: 'Punto de atardecer', pottery: 'Cerámica', monastery: 'Monasterio', village: 'Pueblo', farm: 'Granja', rental: 'Alquiler de coches' },
     meltemiNote: 'Hoy sopla el meltemi — las playas expuestas al norte como Vroulidia y Fikiada pueden estar difíciles. Prueba una playa orientada al sur como Faros o Chrysopigi.',

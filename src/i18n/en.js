@@ -36,6 +36,7 @@ export default {
     p1: "This concierge is powered by Google’s Gemini AI — genuinely useful, but not always right. For anything that matters, trust caroychris.com or write to Caro & Chris directly.",
     p2: "No analytics, no stored messages, no tracking here. Your questions are sent to Google’s Gemini API to generate replies; Vercel, the hosting provider, keeps standard server logs for roughly 24 hours.",
     p3: "Built with love for Caro & Chris’s people — not a commercial product. Please be kind with it.",
+    p4: "Place data on the Sifnos tab is sourced from Google Places API. This data was fetched once by the app’s creator before launch — your use of this app does NOT send any of your data to Google. Google is not a runtime data processor for this app.",
     close: 'Got it',
   },
 
@@ -142,6 +143,10 @@ export default {
     eyebrow: 'The island',
     subtitle: 'The beaches, tavernas, sunset spots, and pottery workshops the couple wants you to find.',
     openMap: "Open Caro & Chris’s full Google map →",
+    picksOnly: "Caro & Chris’s picks",
+    openNow: 'Open now',
+    closed: 'Closed',
+    googleAttribution: 'Place data and ratings from Google',
     filters: { all: 'All', eat: 'Eat', beaches: 'Beaches', sunsets: 'Sunsets', pottery: 'Pottery', villages: 'Villages', other: 'Other' },
     categories: { venue: 'Wedding venue', restaurant: 'Restaurant', beach: 'Beach', sunset: 'Sunset spot', pottery: 'Pottery', monastery: 'Monastery', village: 'Village', farm: 'Farm', rental: 'Car rental' },
     meltemiNote: 'The meltemi is blowing today — windward beaches like Vroulidia, Fikiada, consider a south-facing one like Faros or Chrysopigi instead.',
