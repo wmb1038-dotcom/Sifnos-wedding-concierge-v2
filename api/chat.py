@@ -26,6 +26,7 @@ import datetime
 import json
 import os
 import pathlib
+import threading
 import time
 import urllib.request
 import urllib.error
@@ -49,6 +50,40 @@ except (FileNotFoundError, json.JSONDecodeError):
 
 _ATHENS_TZ = datetime.timezone(datetime.timedelta(hours=3))
 _PRICE_LABEL = {0: "free", 1: "€", 2: "€€", 3: "€€€", 4: "€€€€"}
+
+# =============================================================================
+# Rate limiting — per-instance in-memory token bucket, keyed by client IP.
+# Vercel may run multiple instances under load; each maintains its own bucket.
+# Even a per-instance limit meaningfully raises the cost of automated abuse.
+# =============================================================================
+
+_rl_lock = threading.Lock()
+_rl_buckets: dict = {}   # ip -> {'count': int, 'reset_at': float}
+_RL_WINDOW = 60          # seconds per window
+_RL_LIMIT  = 10          # max requests per IP per window
+
+# Input size caps — protect against token-cost abuse.
+_MAX_MSG_CHARS  = 2000
+_MAX_HISTORY    = 20
+
+
+def _rate_limit_check(ip: str) -> tuple[bool, int]:
+    """Return (allowed, retry_after_seconds). Thread-safe."""
+    now = time.time()
+    with _rl_lock:
+        # Prune stale entries when the table grows large.
+        if len(_rl_buckets) > 1000:
+            cutoff = now - _RL_WINDOW
+            for k in [k for k, v in _rl_buckets.items() if v['reset_at'] < cutoff]:
+                del _rl_buckets[k]
+        bucket = _rl_buckets.get(ip)
+        if bucket is None or now >= bucket['reset_at']:
+            _rl_buckets[ip] = {'count': 1, 'reset_at': now + _RL_WINDOW}
+            return True, 0
+        bucket['count'] += 1
+        if bucket['count'] > _RL_LIMIT:
+            return False, max(1, int(bucket['reset_at'] - now) + 1)
+        return True, 0
 
 
 def _is_open_now(periods: list, athens_dt: datetime.datetime) -> bool | None:
@@ -670,6 +705,12 @@ RECOMMENDING PLACES
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
+        # Rate limit before any processing.
+        ip = (self.headers.get('X-Forwarded-For') or '').split(',')[0].strip() or '0.0.0.0'
+        allowed, retry_after = _rate_limit_check(ip)
+        if not allowed:
+            return self._rate_limited(retry_after)
+
         try:
             length = int(self.headers.get("content-length") or 0)
             raw = self.rfile.read(length) if length else b"{}"
@@ -689,6 +730,8 @@ class handler(BaseHTTPRequestHandler):
         messages = body.get("messages") or []
         if not isinstance(messages, list) or not messages:
             return self._error(400, "Missing messages.")
+        # Cap history depth — keep the most recent messages only.
+        messages = messages[-_MAX_HISTORY:]
 
         # Optional context (tab hint)
         context_key = body.get("context")
@@ -717,7 +760,7 @@ class handler(BaseHTTPRequestHandler):
         contents = []
         for m in messages:
             role = m.get("role", "user")
-            text = (m.get("content") or "").strip()
+            text = (m.get("content") or "").strip()[:_MAX_MSG_CHARS]
             if not text:
                 continue
             if role == "assistant":
@@ -785,7 +828,9 @@ class handler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self):
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        ao = self._allowed_origin()
+        if ao:
+            self.send_header("Access-Control-Allow-Origin", ao)
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
@@ -806,12 +851,40 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        ao = self._allowed_origin()
+        if ao:
+            self.send_header("Access-Control-Allow-Origin", ao)
         self.end_headers()
         self.wfile.write(body)
 
     def _error(self, status: int, message: str):
         return self._json(status, {"error": message})
+
+    def _rate_limited(self, retry_after: int):
+        body = json.dumps({"error": "Too many requests — please wait a minute and try again."}).encode("utf-8")
+        self.send_response(429)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Retry-After", str(retry_after))
+        ao = self._allowed_origin()
+        if ao:
+            self.send_header("Access-Control-Allow-Origin", ao)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _allowed_origin(self) -> str:
+        """Return the echoed origin if allowed, empty string if not."""
+        origin = (self.headers.get("Origin") or "").strip()
+        if not origin:
+            return ""
+        host = (self.headers.get("Host") or "").strip()
+        # Same-origin: frontend and API share the same Vercel host.
+        if host and origin == f"https://{host}":
+            return origin
+        # Allow localhost for local development.
+        if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+            return origin
+        return ""
 
     # Silence default request logging in the Vercel function log
     def log_message(self, fmt, *args):
