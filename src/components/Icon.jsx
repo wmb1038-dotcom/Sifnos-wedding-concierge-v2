@@ -120,6 +120,12 @@ const ICONS = {
     <path d="M3 12h17a3 3 0 1 1-3 3" />
     <path d="M3 16h9" />
   </>,
+  shield: <path d="M12 3L4 7v5c0 4.8 3.4 9.3 8 10.9C16.6 21.3 20 16.8 20 12V7z" />,
+  building: <>
+    <path d="M3 21V7l9-4 9 4v14H3z" />
+    <rect x="9" y="14" width="6" height="7" />
+    <path d="M8 10h2M14 10h2M8 13h2M14 13h2" />
+  </>,
 }
 
 export default function Icon({ name, size = 20, className = '', strokeWidth = 1.5 }) {

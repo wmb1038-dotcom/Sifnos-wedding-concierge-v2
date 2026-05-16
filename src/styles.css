@@ -1476,6 +1476,74 @@ em { font-style: italic; }
   color: var(--ink-soft);
 }
 
+/* Local directory */
+.card-directory { padding-bottom: 8px; }
+.directory-categories { margin: 6px 0 10px; }
+.directory-category {
+  border-bottom: 1px solid var(--line-soft);
+}
+.directory-category:last-child { border-bottom: none; }
+.directory-header {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 12px 0;
+  background: none; border: none; cursor: pointer;
+  text-align: left;
+}
+.directory-header-left {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--ink);
+}
+.directory-label {
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
+  color: var(--ink);
+}
+.directory-badge {
+  font-family: var(--sans); font-size: 11px; font-weight: 700;
+  background: var(--paper-soft); color: var(--ink-soft);
+  border: 1px solid var(--line); border-radius: 99px;
+  padding: 1px 7px;
+}
+.directory-chevron {
+  font-size: 9px; color: var(--ink-faint);
+}
+.directory-body { padding-bottom: 10px; }
+.directory-note {
+  font-size: 12px; color: var(--ink-soft); font-style: italic;
+  margin: 0 0 8px; line-height: 1.5;
+}
+.directory-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0;
+}
+.directory-entry {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 0;
+  border-top: 1px solid var(--line-soft);
+  gap: 8px;
+}
+.directory-name {
+  font-size: 13px; color: var(--ink); flex: 1;
+}
+.directory-phone {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  color: #1a5fb4;
+  background: #edf2fb;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.directory-phone:hover { background: #d0e0f8; }
+.directory-fineprint {
+  font-size: 11px; color: var(--ink-faint);
+  margin: 4px 0 0; line-height: 1.5;
+}
+.directory-source-link {
+  color: var(--ink-soft); text-decoration: underline;
+}
+
 /* Emergency */
 .card-emergency {
   border-color: var(--terra-soft);

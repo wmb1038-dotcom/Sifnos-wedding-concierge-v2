@@ -146,6 +146,76 @@ export const ISLAND_HOPPING = {
   ],
 };
 
+export const LOCAL_DIRECTORY = {
+  source: 'https://sifnos.gr/en/useful-telephone-numbers/',
+  verified_on: '2026-05-16',
+  verification_note: 'Numbers sourced from the official Municipality of Sifnos tourism site. Re-verify before the wedding (late August 2026).',
+  categories: [
+    {
+      id: 'taxis',
+      label_key: 'directory.taxis',
+      icon: 'car',
+      note_key: 'directory.taxis_note',
+      entries: [
+        { name: 'Taxi No2 Kalogirou',     phone: '+306944742652' },
+        { name: 'Taxi No3 Komis',          phone: '+306988808888' },
+        { name: 'Taxi No4 Gerontopoulos',  phone: '+306944444904' },
+        { name: 'Taxi No5 Diaremes',       phone: '+306944642680' },
+        { name: 'Taxi No6 Anapliotis',     phone: '+306944696409' },
+        { name: 'Taxi No7 Depastas',       phone: '+306932403485' },
+        { name: 'Taxi No8 Karavis',        phone: '+306944936111' },
+        { name: 'Taxi No9 Chrysogelos',    phone: '+306944900972' },
+        { name: 'Taxi No10 Koulouris',     phone: '+306973209720' },
+      ],
+    },
+    {
+      id: 'buses',
+      label_key: 'directory.buses',
+      icon: 'bus',
+      note_key: 'directory.buses_note',
+      entries: [
+        { name: 'Depastas Bus',  phone: '+302284031925' },
+        { name: 'Frantzis Bus',  phone: '+302284031393' },
+        { name: 'Psathas Bus',   phone: '+302284031578' },
+        { name: 'Municipal Bus', phone: '+302284033661' },
+      ],
+    },
+    {
+      id: 'medical',
+      label_key: 'directory.medical',
+      icon: 'cross',
+      note_key: 'directory.medical_note',
+      entries: [
+        { name: 'Sifnos Regional Medical Centre', phone: '+302284031315' },
+        { name: 'Pharmacy Vavritsas',             phone: '+302284033541' },
+        { name: 'Pharmacy Fotiadis',              phone: '+302284033033' },
+        { name: 'Pharmacy Kikidis',               phone: '+302284035210' },
+      ],
+    },
+    {
+      id: 'officials',
+      label_key: 'directory.officials',
+      icon: 'shield',
+      entries: [
+        { name: 'Police Station',     phone: '+302284031210' },
+        { name: 'Port Authority',     phone: '+302284033617' },
+        { name: 'Information Office', phone: '+302284033661' },
+      ],
+    },
+    {
+      id: 'museums',
+      label_key: 'directory.museums',
+      icon: 'building',
+      entries: [
+        { name: 'Archaeological Museum',                    phone: '+302284031022' },
+        { name: 'Folk Museum',                              phone: '+302284031341' },
+        { name: 'Ecclesiastical Museum (Vrisi Monastery)', phone: '+302284031335' },
+        { name: 'Acropolis Museum (Agios Andreas)',         phone: '+302284031488' },
+      ],
+    },
+  ],
+};
+
 export const FAQ = [
   {
     q: 'When should I RSVP?',

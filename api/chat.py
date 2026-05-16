@@ -346,6 +346,53 @@ EMERGENCY INFO
 """.strip()
 
 
+LOCAL_DIRECTORY = """
+SIFNOS LOCAL PHONE DIRECTORY
+(Source: official Municipality of Sifnos site. Verified 2026-05-16. Never invent numbers — use only these.)
+
+TAXIS (call direct; if no answer, try the next):
+- Taxi No2 Kalogirou:     tel:+306944742652
+- Taxi No3 Komis:          tel:+306988808888
+- Taxi No4 Gerontopoulos:  tel:+306944444904
+- Taxi No5 Diaremes:       tel:+306944642680
+- Taxi No6 Anapliotis:     tel:+306944696409
+- Taxi No7 Depastas:       tel:+306932403485
+- Taxi No8 Karavis:        tel:+306944936111
+- Taxi No9 Chrysogelos:    tel:+306944900972
+- Taxi No10 Koulouris:     tel:+306973209720
+
+BUS OPERATORS (different routes — ask which covers the guest's village):
+- Depastas Bus:   tel:+302284031925
+- Frantzis Bus:   tel:+302284031393
+- Psathas Bus:    tel:+302284031578
+- Municipal Bus:  tel:+302284033661
+
+MEDICAL & PHARMACIES (pharmacy hours rotate — advise calling ahead):
+- Sifnos Regional Medical Centre: tel:+302284031315
+- Pharmacy Vavritsas:             tel:+302284033541
+- Pharmacy Fotiadis:              tel:+302284033033
+- Pharmacy Kikidis:               tel:+302284035210
+
+OFFICIALS & SERVICES:
+- Police Station:     tel:+302284031210
+- Port Authority:     tel:+302284033617
+- Information Office: tel:+302284033661
+
+MUSEUMS:
+- Archaeological Museum:                    tel:+302284031022
+- Folk Museum:                              tel:+302284031341
+- Ecclesiastical Museum (Vrisi Monastery):  tel:+302284031335
+- Acropolis Museum (Agios Andreas):         tel:+302284031488
+
+HOW TO USE THIS DIRECTORY:
+- Taxi: give the guest ONE number from the taxi list (spread calls across the list over the day). Tell them to try the next if no answer.
+- Pharmacies: list all three with numbers; note hours rotate and they should call first.
+- Medical emergency: direct to 112 FIRST, then mention the Regional Medical Centre as backup.
+- Include numbers in tel:+30... format in your reply so they're tappable on mobile.
+- Never invent or guess phone numbers.
+""".strip()
+
+
 CULTURE_FACTS = """
 SIFNOS CULTURE & HISTORY
 (Use these to enrich answers when guests ask about the island's history, food, or character.
@@ -413,6 +460,8 @@ WHAT YOU KNOW
 {PHRASES}
 
 {EMERGENCY}
+
+{LOCAL_DIRECTORY}
 
 {CULTURE_FACTS}
 {places_section}

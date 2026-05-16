@@ -2,7 +2,7 @@ import { useState } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import AppFooter from '../components/AppFooter.jsx'
-import { ARRIVAL, FERRIES, GETTING_AROUND, PHRASEBOOK, EMERGENCY, ISLAND_HOPPING } from '../data/travel.js'
+import { ARRIVAL, FERRIES, GETTING_AROUND, PHRASEBOOK, EMERGENCY, ISLAND_HOPPING, LOCAL_DIRECTORY } from '../data/travel.js'
 import { useT } from '../i18n/index.jsx'
 
 export default function TravelTab({ onAsk }) {
@@ -110,6 +110,9 @@ export default function TravelTab({ onAsk }) {
         </div>
       </section>
 
+      {/* LOCAL DIRECTORY */}
+      <LocalDirectorySection />
+
       {/* ISLAND HOPPING */}
       <section className="card">
         <p className="card-eyebrow">{t('travel.islandHoppingEyebrow')}</p>
@@ -165,6 +168,74 @@ function PackingListCard({ onAsk }) {
         </div>
       ))}
     </section>
+  )
+}
+
+function LocalDirectorySection() {
+  const t = useT()
+  const dir = t('travel.directory') || {}
+
+  const fineprint = (dir.fineprint || '')
+    .replace('{source}', '')
+    .replace('{date}', LOCAL_DIRECTORY.verified_on)
+
+  return (
+    <section className="card card-directory">
+      <p className="card-eyebrow">{dir.sectionEyebrow}</p>
+      <h2 className="card-title">{dir.sectionTitle}</h2>
+      <div className="directory-categories">
+        {LOCAL_DIRECTORY.categories.map(cat => (
+          <DirectoryCategory key={cat.id} cat={cat} t={t} />
+        ))}
+      </div>
+      <p className="directory-fineprint">
+        {(dir.fineprint || '').split('{source}')[0]}
+        <a
+          href={LOCAL_DIRECTORY.source}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="directory-source-link"
+        >
+          {dir.source_label}
+        </a>
+        {((dir.fineprint || '').split('{source}')[1] || '').replace('{date}', LOCAL_DIRECTORY.verified_on)}
+      </p>
+    </section>
+  )
+}
+
+function DirectoryCategory({ cat, t }) {
+  const [open, setOpen] = useState(false)
+  const label = t('travel.' + cat.label_key) || cat.id
+  const note  = cat.note_key ? t('travel.' + cat.note_key) : null
+
+  return (
+    <div className="directory-category">
+      <button className="directory-header" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <span className="directory-header-left">
+          <Icon name={cat.icon} size={16} />
+          <span className="directory-label">{label}</span>
+          <span className="directory-badge">{cat.entries.length}</span>
+        </span>
+        <span className="directory-chevron">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div className="directory-body">
+          {note && <p className="directory-note">{note}</p>}
+          <ul className="directory-list">
+            {cat.entries.map(entry => (
+              <li key={entry.phone} className="directory-entry">
+                <span className="directory-name">{entry.name}</span>
+                <a href={`tel:${entry.phone}`} className="directory-phone">
+                  <Icon name="phone" size={12} />
+                  {entry.phone.replace('+30', '+30 ')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 
