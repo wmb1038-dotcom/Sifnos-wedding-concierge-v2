@@ -24,6 +24,10 @@ export default function PrivacyNotice({ onClose }) {
             a commercial product.
           </p>
           <p>
+            This app is not intended for guests under 16. If you are under 16, please ask a parent or
+            guardian before using the Ask tab.
+          </p>
+          <p>
             For any privacy question or data request:{' '}
             <a href={CONTACT_HREF}>{CONTACT_DISPLAY}</a>
           </p>
@@ -36,12 +40,16 @@ export default function PrivacyNotice({ onClose }) {
             <li><strong>Weather</strong> &mdash; current conditions are fetched from an open weather service using only island-level location. No user data is transmitted.</li>
             <li><strong>Session storage</strong> &mdash; your RSVP code and active tab are stored in your browser&rsquo;s sessionStorage only. This data never leaves your device.</li>
           </ul>
+          <p>
+            No automated decisions with legal or similarly significant effects are made about you using
+            this app. The AI generates informational replies only.
+          </p>
 
           <h3 className="gdpr-section-title">3. Lawful basis</h3>
           <p>
             Processing of your Ask-tab messages is based on your consent (Article&nbsp;6(1)(a) GDPR),
-            given when you tick the box on the entry screen. You may withdraw consent at any time by
-            closing the app and clearing your browser session.
+            given when you tick the box on the AI concierge chat tab. You may withdraw consent at any
+            time by closing the app and clearing your browser session.
           </p>
 
           <h3 className="gdpr-section-title">4. Who we share data with</h3>
@@ -49,8 +57,9 @@ export default function PrivacyNotice({ onClose }) {
             <li>
               <strong>Google LLC</strong> &mdash; Ask-tab messages are processed by Google&rsquo;s Gemini API.
               Google is based in the United States and processes data under Standard Contractual Clauses
-              (SCCs). See{' '}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>.
+              (SCCs). See the{' '}
+              <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Gemini API Terms of Service</a>{' '}
+              and <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
             </li>
             <li>
               <strong>Vercel Inc.</strong> &mdash; hosts this app. Standard server logs pass through
@@ -62,8 +71,9 @@ export default function PrivacyNotice({ onClose }) {
           <h3 className="gdpr-section-title">5. Retention</h3>
           <p>
             We hold nothing on our own servers. Vercel&rsquo;s infrastructure logs are retained for
-            approximately 24&nbsp;hours. Google may retain API inputs per its own policy &mdash; see
-            Google&rsquo;s privacy notice for details.
+            approximately 24&nbsp;hours. Google&rsquo;s handling of Gemini API inputs is governed by the{' '}
+            <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Gemini API Terms of Service</a>;
+            by default, API inputs are not used to train Google&rsquo;s models.
           </p>
 
           <h3 className="gdpr-section-title">6. Your rights</h3>
@@ -76,6 +86,11 @@ export default function PrivacyNotice({ onClose }) {
             Write to <a href={CONTACT_HREF}>{CONTACT_DISPLAY}</a> and we&rsquo;ll respond promptly.
             To request deletion of any associated data, you can also use this{' '}
             <a href={DELETION_HREF}>pre-filled email template</a>.
+          </p>
+          <p>
+            You may also lodge a complaint with the supervisory authority in the EU member state where
+            you live or work. A full list of national supervisory authorities is available at{' '}
+            <a href="https://www.edpb.europa.eu/about-edpb/about-edpb/members_en" target="_blank" rel="noopener noreferrer">edpb.europa.eu</a>.
           </p>
 
           <h3 className="gdpr-section-title">7. International transfers</h3>

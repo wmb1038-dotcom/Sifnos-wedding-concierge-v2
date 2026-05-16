@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
+import PrivacyNotice from '../components/PrivacyNotice.jsx'
 import { postChat } from '../lib/api.js'
 import { useT } from '../i18n/index.jsx'
 
+const CONSENT_KEY = 'sifnos_consent_ts'
+
 export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const t = useT()
+  const [hasConsented, setHasConsented] = useState(() => !!sessionStorage.getItem(CONSENT_KEY))
+  const [privacyOpen, setPrivacyOpen] = useState(false)
   const [history, setHistory] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -18,18 +23,20 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
 
   useEffect(() => () => clearTimeout(throttleTimer.current), [])
 
-  // First-time greeting
+  // First-time greeting (fires once consent is given)
   useEffect(() => {
+    if (!hasConsented) return
     if (!hasGreeted && history.length === 0) {
       setHasGreeted(true)
       sendGreeting()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [hasConsented])
 
   // Handle seeded prompts from other tabs
   useEffect(() => {
     if (!seedContext) return
+    if (!hasConsented) { clearSeed(); return }
     if (seedContext.prompt) {
       submitMessage(seedContext.prompt, seedContext.context)
     }
@@ -107,6 +114,11 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
     }
   }
 
+  const handleConsent = useCallback(() => {
+    sessionStorage.setItem(CONSENT_KEY, new Date().toISOString())
+    setHasConsented(true)
+  }, [])
+
   const reset = () => {
     if (history.length > 1 && !confirm(t('ask.confirmReset'))) return
     setHistory([])
@@ -116,6 +128,23 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const showStarters = history.length <= 1
 
   const starters = t('ask.starters') || []
+
+  if (!hasConsented) {
+    return (
+      <div className="page page-ask">
+        <PageHeader
+          eyebrow={t('ask.eyebrow')}
+          title={`<span>${t('ask.title1')}</span> <em>${t('ask.title2')}</em>`}
+          subtitle={t('ask.subtitle')}
+        />
+        <AskConsentGate
+          onConsent={handleConsent}
+          onOpenPrivacy={() => setPrivacyOpen(true)}
+        />
+        {privacyOpen && <PrivacyNotice onClose={() => setPrivacyOpen(false)} />}
+      </div>
+    )
+  }
 
   return (
     <div className="page page-ask">
@@ -197,6 +226,46 @@ function FinePrint({ t }) {
     <p className="chat-fineprint">
       {parts[0]}<a href="https://www.caroychris.com" target="_blank" rel="noopener noreferrer">caroychris.com</a>{parts[1]}
     </p>
+  )
+}
+
+function AskConsentGate({ onConsent, onOpenPrivacy }) {
+  const [checked, setChecked] = useState(false)
+  return (
+    <div className="ask-consent-gate">
+      <div className="ask-consent-card">
+        <p className="card-eyebrow">Before we chat</p>
+        <h2 className="card-title">A note on privacy</h2>
+        <p className="ask-consent-body">
+          This tab sends your messages to Google&rsquo;s Gemini AI to generate replies.
+          Nothing is stored on our servers &mdash; your words go in and an answer comes back.
+          The other tabs (Today, Wedding, Sifnos, Travel) work without this.
+        </p>
+        <div className="ask-consent-check">
+          <input
+            id="ask-consent-cb"
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <label htmlFor="ask-consent-cb">
+            I&rsquo;ve read the{' '}
+            <button type="button" className="ask-consent-link" onClick={onOpenPrivacy}>privacy notice</button>
+            {' '}and agree my messages may be sent to Google&rsquo;s Gemini API.
+            I can withdraw consent any time by closing the app.
+          </label>
+        </div>
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={!checked}
+          onClick={onConsent}
+          style={{ width: '100%', justifyContent: 'center', opacity: checked ? 1 : 0.5 }}
+        >
+          Open chat
+        </button>
+      </div>
+    </div>
   )
 }
 

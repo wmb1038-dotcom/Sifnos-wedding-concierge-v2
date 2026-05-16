@@ -10,25 +10,10 @@ import { postChat } from './lib/api.js'
 
 const LS_RSVP = 'sifnos_rsvp_code'
 const LS_TAB = 'sifnos_active_tab'
-const LS_CONSENT = 'sifnos_consent_ts'
-const CONSENT_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000
-
-function consentIsValid() {
-  const ts = sessionStorage.getItem(LS_CONSENT)
-  if (!ts) return false
-  return Date.now() - new Date(ts).getTime() < CONSENT_MAX_AGE_MS
-}
 
 export default function App() {
   // RSVP gate state
-  const [rsvpCode, setRsvpCode] = useState(() => {
-    if (!consentIsValid()) {
-      sessionStorage.removeItem(LS_RSVP)
-      sessionStorage.removeItem(LS_CONSENT)
-      return null
-    }
-    return sessionStorage.getItem(LS_RSVP)
-  })
+  const [rsvpCode, setRsvpCode] = useState(() => sessionStorage.getItem(LS_RSVP))
   const [unlocking, setUnlocking] = useState(false)
   const [lockError, setLockError] = useState('')
 

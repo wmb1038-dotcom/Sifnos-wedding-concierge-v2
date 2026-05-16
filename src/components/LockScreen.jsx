@@ -3,23 +3,17 @@ import { TAGLINE, WEDDING_WEBSITE } from '../data/wedding.js'
 import PrivacyNotice from './PrivacyNotice.jsx'
 import { useLocale, LOCALES } from '../i18n/index.jsx'
 
-const CONSENT_KEY = 'sifnos_consent_ts'
-
 export default function LockScreen({ onUnlock, unlocking, error }) {
   const { t, locale, setLocale } = useLocale()
   const [code, setCode] = useState('')
-  const [consentGiven, setConsentGiven] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
 
-  const canSubmit = code.trim() && consentGiven && !unlocking
+  const canSubmit = code.trim() && !unlocking
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!canSubmit) return
-    const ok = await onUnlock(code.trim())
-    if (ok) {
-      sessionStorage.setItem(CONSENT_KEY, new Date().toISOString())
-    }
+    await onUnlock(code.trim())
   }
 
   const openPrivacy = (e) => {
@@ -96,19 +90,6 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
                 </svg>
               )}
             </button>
-          </div>
-
-          <div className="lock-consent">
-            <input
-              id="consent-checkbox"
-              type="checkbox"
-              checked={consentGiven}
-              onChange={(e) => setConsentGiven(e.target.checked)}
-              disabled={unlocking}
-            />
-            <label htmlFor="consent-checkbox">
-              {t('lock.consent.before')}<a href="#privacy" onClick={openPrivacy}>{t('lock.consent.linkText')}</a>{t('lock.consent.after')}
-            </label>
           </div>
 
           {error && <p className="lock-error" role="alert">{error}</p>}
