@@ -160,7 +160,8 @@ def _build_places_block(athens_dt: datetime.datetime | None = None) -> str:
         f"SIFNOS PLACES (Google Places, fetched {_SIFNOS_FETCHED_AT})\n"
         'Rules: lead answers with COUPLE PICKS; cite ratings as "X.X on Google"; '
         "OPEN/CLOSED reflects current Athens time; "
-        'say "I don\'t have details on that one" for unlisted places.\n\n'
+        'say "I don\'t have details on that one" for unlisted places; '
+        'NEVER include the text "[PICK]" in a reply — it is an internal marker only.\n\n'
         + body
     )
 
