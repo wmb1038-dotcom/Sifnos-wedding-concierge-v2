@@ -114,6 +114,12 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
           {error && <p className="lock-error" role="alert">{error}</p>}
         </form>
 
+        <div className="lock-disclaimer" role="note">
+          <p>This concierge uses AI (Google&rsquo;s Gemini). It can be wrong &mdash; for anything that matters, double-check at <a href="https://www.caroychris.com" target="_blank" rel="noopener noreferrer">caroychris.com</a> or write to <a href="mailto:hello@caroychris.com">hello@caroychris.com</a>.</p>
+          <p>No analytics, stored messages, or tracking. Your questions go to Google&rsquo;s Gemini API to generate replies; Vercel keeps basic server logs for about 24&nbsp;hours.</p>
+          <p>Built with love for Caro &amp; Chris&rsquo;s friends and family &mdash; not a commercial product. Please be kind with it.</p>
+        </div>
+
         {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
 
         <p className="lock-fineprint">
