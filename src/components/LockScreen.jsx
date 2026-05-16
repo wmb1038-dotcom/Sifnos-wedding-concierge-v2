@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TAGLINE, WEDDING_WEBSITE } from '../data/wedding.js'
-import PrivacyModal from './PrivacyModal.jsx'
+import PrivacyNotice from './PrivacyNotice.jsx'
 import { useLocale, LOCALES } from '../i18n/index.jsx'
 
 const CONSENT_KEY = 'sifnos_consent_ts'
@@ -118,9 +118,10 @@ export default function LockScreen({ onUnlock, unlocking, error }) {
           <p>This concierge uses AI (Google&rsquo;s Gemini). It can be wrong &mdash; for anything that matters, double-check at <a href="https://www.caroychris.com" target="_blank" rel="noopener noreferrer">caroychris.com</a> or write to <a href="mailto:hello@caroychris.com">hello@caroychris.com</a>.</p>
           <p>No analytics, stored messages, or tracking. Your questions go to Google&rsquo;s Gemini API to generate replies; Vercel keeps basic server logs for about 24&nbsp;hours.</p>
           <p>Built with love for Caro &amp; Chris&rsquo;s friends and family &mdash; not a commercial product. Please be kind with it.</p>
+          <p><a href="#privacy" onClick={openPrivacy}>Full privacy notice &rarr;</a></p>
         </div>
 
-        {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
+        {privacyOpen && <PrivacyNotice onClose={() => setPrivacyOpen(false)} />}
 
         <p className="lock-fineprint">
           {t('lock.fineprint')} <a href={WEDDING_WEBSITE} target="_blank" rel="noopener noreferrer">caroychris.com</a>.

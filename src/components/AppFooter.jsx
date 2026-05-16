@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import PrivacyModal from './PrivacyModal.jsx'
+import PrivacyNotice from './PrivacyNotice.jsx'
 import { useLocale, LOCALES } from '../i18n/index.jsx'
 
 const DELETION_HREF =
@@ -45,7 +45,7 @@ export default function AppFooter() {
           </div>
         </nav>
       </footer>
-      {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
+      {privacyOpen && <PrivacyNotice onClose={() => setPrivacyOpen(false)} />}
     </>
   )
 }
