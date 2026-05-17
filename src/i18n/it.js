@@ -14,7 +14,7 @@ export default {
     errors: {
       wrong: 'Il codice non ha funzionato — controlla il tuo invito?',
       sideways: 'Qualcosa è andato storto. Riprova?',
-      noConnection: 'Impossibile contattare il concierge. Controlla la connessione?',
+      noConnection: 'Impossibile contattare Cleo. Controlla la connessione?',
     },
   },
 
@@ -33,7 +33,7 @@ export default {
 
   privacy: {
     title: 'Informativa sulla privacy',
-    p1: 'Questo concierge è alimentato da Gemini AI di Google — davvero utile, ma non sempre preciso. Per qualsiasi cosa importante, affidati a caroychris.com o scrivi direttamente a Caro e Chris.',
+    p1: "Cleo è un'assistente AI, alimentata da Gemini di Google — davvero utile, ma non sempre precisa. Per qualsiasi cosa importante, affidati a caroychris.com o scrivi direttamente a Caro e Chris.",
     p2: 'Nessuna analisi, nessun messaggio salvato, nessun tracciamento. Le tue domande vengono inviate all\'API Gemini di Google per generare risposte; Vercel, il provider di hosting, conserva log standard del server per circa 24 ore.',
     p3: 'Fatto con amore per gli amici di Caro e Chris — non è un prodotto commerciale. Usalo con cura.',
     p4: "I dati sui luoghi nella scheda Sifnos provengono dall'API Google Places. Questi dati sono stati recuperati una sola volta dal creatore dell'app prima del lancio — il tuo utilizzo di questa app NON invia dati a Google. Google non è un elaboratore di dati in tempo reale per questa app.",
@@ -65,7 +65,7 @@ export default {
     islandMap: 'Vedi la mappa dell\'isola',
     fullAgenda: 'Programma completo del matrimonio',
     ferriesTransit: 'Traghetti e trasporti',
-    askConcierge: 'Chiedi al concierge',
+    askConcierge: 'Chiedi a Cleo',
     emergency: 'Emergenza: 112',
     ideaEyebrow: 'Un\'idea per oggi',
     askAbout: 'Chiedi di questo',
@@ -147,7 +147,7 @@ export default {
       sectionTitle: 'Cultura & Storia',
       sectionSubtitle: 'Dieci cose che rendono Sifnos unica tra tutte le isole.',
       filters: { all: 'Tutto', history: 'Storia', food: 'Cucina', religion: 'Religione', craft: 'Artigianato', nature: 'Natura', social: 'Tradizioni' },
-      askAbout: 'Chiedi al concierge su questo',
+      askAbout: 'Chiedi a Cleo su questo',
       didYouKnow: 'Lo sapevi?',
       readMore: 'Leggi di più',
       readLess: 'Meno',
@@ -303,21 +303,21 @@ export default {
   },
 
   ask: {
-    eyebrow: 'Un piccolo aiuto AI',
-    title1: 'Chiedi al',
-    title2: 'concierge',
+    eyebrow: 'Cleo, Wedding Concierge',
+    title1: 'Chiedi a',
+    title2: 'Cleo',
     subtitle: 'Logistica del matrimonio, l\'isola, ristoranti, qualsiasi cosa nel mezzo — scrivi pure.',
     startOver: 'Ricomincia',
     startFresh: 'Nuova conversazione',
     placeholder: 'Chiedi qualsiasi cosa — il programma, le spiagge, il cibo…',
-    fineprint: 'L\'AI può sbagliare — per informazioni ufficiali, controlla caroychris.com',
+    fineprint: "Cleo è un'assistente AI (con tecnologia Gemini di Google) e può a volte sbagliare — per informazioni ufficiali, controlla caroychris.com",
     accessExpired: 'Il mio accesso è scaduto — aggiorna e reinserisci il tuo codice RSVP.',
     snag: 'Scusa — ho avuto un problema ({error}). Riprovi?',
-    noConnection: 'Impossibile contattare il concierge — controlla la connessione.',
+    noConnection: 'Impossibile contattare Cleo — controlla la connessione.',
     you: 'tu',
-    concierge: 'concierge',
+    concierge: 'Cleo',
     confirmReset: 'Iniziare una nuova conversazione?',
-    fallbackGreeting: 'Ciao! Chiedimi qualsiasi cosa sul matrimonio o su Sifnos.',
+    fallbackGreeting: 'Ciao! Sono Cleo — chiedimi qualsiasi cosa sul matrimonio o su Sifnos.',
     starters: [
       { q: 'Qual è il programma del giorno del matrimonio?',  label: 'Programma matrimonio' },
       { q: 'Dov\'è il locale e come ci arrivo?',              label: 'Locale e indicazioni' },
@@ -328,6 +328,7 @@ export default {
       { q: 'Cosa mettere in valigia per Sifnos a inizio settembre?', label: 'Cosa portare' },
       { q: 'Dove alloggiare sull\'isola?',                   label: 'Dove alloggiare' },
       { q: 'Dimmi qualcosa di affascinante su Sifnos.',       label: 'Curiosità su Sifnos' },
+      { q: 'Chi è Cleo?',                                     label: 'Chi è Cleo?' },
     ],
   },
 }

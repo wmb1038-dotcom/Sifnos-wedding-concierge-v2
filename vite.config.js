@@ -26,7 +26,8 @@ export default defineConfig({
       },
       workbox: {
         // Precache all bundled assets (JS, CSS, HTML, fonts, data JSON, icons)
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2,woff,ttf}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2,woff,ttf,webp}'],
+        globIgnores: ['images/cleo-avatar.png'],
         navigateFallback: '/index.html',
         runtimeCaching: [
           // Open-Meteo weather: network-first, 1h stale fallback

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import PrivacyNotice from '../components/PrivacyNotice.jsx'
+import CleoAvatar from '../components/CleoAvatar.jsx'
 import { postChat } from '../lib/api.js'
 import { useT } from '../i18n/index.jsx'
 
@@ -140,6 +141,7 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
         <AskConsentGate
           onConsent={handleConsent}
           onOpenPrivacy={() => setPrivacyOpen(true)}
+          cleo={<CleoAvatar size="lg" />}
         />
         {privacyOpen && <PrivacyNotice onClose={() => setPrivacyOpen(false)} />}
       </div>
@@ -153,9 +155,12 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
         title={`<span>${t('ask.title1')}</span> <em>${t('ask.title2')}</em>`}
         subtitle={t('ask.subtitle')}
       >
-        <button className="reset-btn" onClick={reset} aria-label={t('ask.startOver')} title={t('ask.startFresh')}>
-          <Icon name="ask" size={14} /> {t('ask.startOver')}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CleoAvatar size="sm" />
+          <button className="reset-btn" onClick={reset} aria-label={t('ask.startOver')} title={t('ask.startFresh')}>
+            <Icon name="ask" size={14} /> {t('ask.startOver')}
+          </button>
+        </div>
       </PageHeader>
 
       <div className="messages" role="log" aria-live="polite">
@@ -210,9 +215,20 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
 }
 
 function MessageBubble({ role, content, t }) {
+  if (role !== 'user') {
+    return (
+      <div className="bubble-row">
+        <CleoAvatar size="sm" />
+        <div className="bubble from-bot">
+          <span className="sender">{t('ask.concierge')}</span>
+          <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
+        </div>
+      </div>
+    )
+  }
   return (
-    <div className={`bubble ${role === 'user' ? 'from-user' : 'from-bot'}`}>
-      <span className="sender">{role === 'user' ? t('ask.you') : t('ask.concierge')}</span>
+    <div className="bubble from-user">
+      <span className="sender">{t('ask.you')}</span>
       <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
     </div>
   )
@@ -229,15 +245,16 @@ function FinePrint({ t }) {
   )
 }
 
-function AskConsentGate({ onConsent, onOpenPrivacy }) {
+function AskConsentGate({ onConsent, onOpenPrivacy, cleo }) {
   const [checked, setChecked] = useState(false)
   return (
     <div className="ask-consent-gate">
       <div className="ask-consent-card">
+        {cleo}
         <p className="card-eyebrow">Before we chat</p>
         <h2 className="card-title">A note on privacy</h2>
         <p className="ask-consent-body">
-          This tab sends your messages to Google&rsquo;s Gemini AI to generate replies.
+          Cleo uses Google&rsquo;s Gemini AI to generate replies.
           Nothing is stored on our servers &mdash; your words go in and an answer comes back.
           The other tabs (Today, Wedding, Sifnos, Travel) work without this.
         </p>
@@ -271,8 +288,11 @@ function AskConsentGate({ onConsent, onOpenPrivacy }) {
 
 function TypingIndicator() {
   return (
-    <div className="typing" aria-label="Concierge is thinking">
-      <span></span><span></span><span></span>
+    <div className="bubble-row">
+      <CleoAvatar size="sm" />
+      <div className="typing" aria-label="Cleo is thinking">
+        <span></span><span></span><span></span>
+      </div>
     </div>
   )
 }
