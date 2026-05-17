@@ -844,6 +844,153 @@ em { font-style: italic; }
   color: var(--ink-soft);
 }
 
+/* 5-day forecast strip */
+.card-forecast { padding: 18px 18px 14px; }
+.forecast-heading {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 12px;
+}
+.forecast-days {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: var(--parchment);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px 8px;
+  min-width: 0;
+  text-align: center;
+  position: relative;
+}
+.fday-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0;
+  white-space: nowrap;
+}
+.fday-icon {
+  color: var(--sand);
+  margin: 4px 0 2px;
+  line-height: 1;
+}
+.fday-temps {
+  display: flex;
+  gap: 3px;
+  align-items: baseline;
+  line-height: 1;
+}
+.fday-high {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.fday-low {
+  font-family: var(--serif);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.fday-wind {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--sans);
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+.fday-uv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-top: 3px;
+  line-height: 1.2;
+}
+.fday-uv-num {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+}
+.fday-uv-word {
+  font-family: var(--sans);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.uv-low       { color: #3a9a3e; background: rgba(58,154,62,.10); }
+.uv-moderate  { color: #c8900a; background: rgba(200,144,10,.10); }
+.uv-high      { color: #d05a00; background: rgba(208,90,0,.10); }
+.uv-very-high { color: #c42020; background: rgba(196,32,32,.10); }
+.uv-extreme   { color: #8b1aaa; background: rgba(139,26,170,.10); }
+
+/* Wedding day card — terracotta accent */
+.forecast-wedding {
+  border-color: var(--terra-soft);
+  background: color-mix(in srgb, var(--terra) 6%, var(--paper));
+}
+.forecast-wedding .fday-icon { color: var(--terra); }
+.fday-wedding-tag {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--terra);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+}
+
+/* Forecast skeleton */
+.skel {
+  background: var(--line-soft);
+  border-radius: 4px;
+  animation: skel-pulse 1.6s ease-in-out infinite;
+}
+.skel-label { width: 28px; height: 9px; }
+.skel-icon  { width: 28px; height: 28px; border-radius: 50%; margin: 4px 0 2px; }
+.skel-temps { width: 32px; height: 14px; }
+.skel-sm    { width: 24px; height: 9px; }
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.85; }
+}
+
+/* Forecast mobile: horizontal scroll on narrow screens */
+@media (max-width: 500px) {
+  .card-forecast { padding: 18px 14px 14px; }
+  .forecast-days {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .forecast-days::-webkit-scrollbar { display: none; }
+  .forecast-day { min-width: 58px; flex-shrink: 0; }
+}
+
 /* Quick actions grid */
 .card-quick .card-title { margin-bottom: 14px; }
 .quick-grid {
@@ -1864,6 +2011,21 @@ em { font-style: italic; }
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
+}
+
+/* On touch screens, center the popover so it doesn't clip off-screen */
+@media (max-width: 600px) {
+  .cleo-popover {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -48%) scale(0.97);
+    width: 180px;
+  }
+  .cleo-avatar-trigger.open .cleo-popover {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .typing {
