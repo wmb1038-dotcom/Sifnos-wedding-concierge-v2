@@ -818,15 +818,15 @@ class handler(BaseHTTPRequestHandler):
                 break
             except urllib.error.URLError as exc:
                 print(f"Gemini URLError: {exc}")
-                return self._error(504, "Couldn't reach the concierge — check your connection and try again.")
+                return self._error(504, "Cleo couldn't reach the internet — check your connection and try again.")
             except Exception as exc:
                 print(f"Gemini unexpected: {exc}")
-                return self._error(500, "Concierge hiccup.")
+                return self._error(500, "Cleo had an unexpected hiccup.")
 
         if data is None:
             if _last_status == 429:
-                return self._error(429, "The concierge is a little overwhelmed right now — give it a minute and try again.")
-            return self._error(502, "The concierge is having a moment. Try again in a few seconds.")
+                return self._error(429, "Cleo is a little overwhelmed right now — give it a minute and try again.")
+            return self._error(502, "Cleo is taking a short break. Try again in a few seconds.")
 
         reply = self._extract_text(data) or "Sorry — I didn't catch that. Try asking again?"
         return self._json(200, {"reply": reply})
@@ -866,7 +866,7 @@ class handler(BaseHTTPRequestHandler):
         return self._json(status, {"error": message})
 
     def _rate_limited(self, retry_after: int):
-        body = json.dumps({"error": "Too many requests — please wait a minute and try again."}).encode("utf-8")
+        body = json.dumps({"error": "Cleo is a little overwhelmed right now — give it a minute and try again."}).encode("utf-8")
         self.send_response(429)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))

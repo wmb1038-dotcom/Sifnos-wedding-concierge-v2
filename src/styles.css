@@ -1961,6 +1961,25 @@ em { font-style: italic; }
   font-style: italic;
 }
 
+.bubble-error { border-left: 3px solid var(--terra); }
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 600;
+  color: var(--terra);
+  background: transparent;
+  border: 1.5px solid var(--terra);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.retry-btn:hover { background: var(--terra); color: #fff; }
+
 /* Ask consent gate */
 .ask-consent-gate {
   flex: 1;

@@ -318,6 +318,10 @@ export default {
     concierge: 'Cleo',
     confirmReset: '¿Iniciar una nueva conversación?',
     fallbackGreeting: '¡Hola! Soy Cleo — pregúntame cualquier cosa sobre la boda o Sifnos.',
+    errOffline: "Cleo necesita conexión. Las otras pestañas funcionan sin conexión — o visita caroychris.com.",
+    errServer: "Cleo está tomando un descanso. Inténtalo de nuevo en un momento, o visita caroychris.com.",
+    errRateLimit: "Cleo está un poco saturada ahora mismo — dale un momento.",
+    tryAgain: 'Inténtalo de nuevo',
     starters: [
       { q: '¿Cuál es el programa del día de la boda?',                label: 'Programa boda' },
       { q: '¿Dónde está el lugar y cómo llego?',                     label: 'Lugar y cómo llegar' },

@@ -23,6 +23,7 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const inputRef = useRef(null)
   const textareaRef = useRef(null)
   const throttleTimer = useRef(null)
+  const lastSentText = useRef('')
 
   useEffect(() => () => clearTimeout(throttleTimer.current), [])
 
@@ -73,6 +74,11 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
     ta.style.height = Math.min(ta.scrollHeight, 140) + 'px'
   }, [input])
 
+  const handleRetry = useCallback(() => {
+    setHistory(h => h.slice(0, -2))
+    setInput(lastSentText.current)
+  }, [])
+
   const sendGreeting = useCallback(async () => {
     setSending(true)
     try {
@@ -92,8 +98,10 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const submitMessage = useCallback(async (text, context = null) => {
     if (!text.trim() || sending || throttled) return
 
-    // Build the new history immediately (so the user message renders)
-    const newHistory = [...history, { role: 'user', content: text.trim() }]
+    const trimmed = text.trim()
+    lastSentText.current = trimmed
+
+    const newHistory = [...history, { role: 'user', content: trimmed }]
     setHistory(newHistory)
     setInput('')
     setSending(true)
@@ -104,11 +112,18 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
         setHistory([...newHistory, { role: 'assistant', content: res.reply }])
       } else if (res.status === 401) {
         setHistory([...newHistory, { role: 'assistant', content: t('ask.accessExpired') }])
+      } else if (res.status === 429) {
+        setHistory([...newHistory, { role: 'assistant', content: t('ask.errRateLimit'), errorType: 'ratelimit' }])
       } else {
-        setHistory([...newHistory, { role: 'assistant', content: res.error || t('ask.snag', { error: 'unknown' }) }])
+        setHistory([...newHistory, { role: 'assistant', content: res.error || t('ask.errServer'), errorType: 'server' }])
       }
     } catch (err) {
-      setHistory([...newHistory, { role: 'assistant', content: t('ask.noConnection') }])
+      const isTimeout = err.name === 'AbortError'
+      if (isTimeout) {
+        setHistory([...newHistory, { role: 'assistant', content: t('ask.errServer'), errorType: 'timeout' }])
+      } else {
+        setHistory([...newHistory, { role: 'assistant', content: t('ask.errOffline'), errorType: 'offline' }])
+      }
     } finally {
       setSending(false)
       setThrottled(true)
@@ -195,7 +210,14 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
 
       <div className="messages" role="log" aria-live="polite">
         {history.map((msg, i) => (
-          <MessageBubble key={i} role={msg.role} content={msg.content} t={t} />
+          <MessageBubble
+            key={i}
+            role={msg.role}
+            content={msg.content}
+            errorType={msg.errorType}
+            onRetry={msg.errorType ? handleRetry : null}
+            t={t}
+          />
         ))}
         {sending && <TypingIndicator />}
         <div ref={messagesEndRef} />
@@ -244,14 +266,19 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   )
 }
 
-function MessageBubble({ role, content, t }) {
+function MessageBubble({ role, content, errorType, onRetry, t }) {
   if (role !== 'user') {
     return (
       <div className="bubble-row">
         <CleoAvatar size="sm" />
-        <div className="bubble from-bot">
+        <div className={`bubble from-bot${errorType ? ' bubble-error' : ''}`}>
           <span className="sender">{t('ask.concierge')}</span>
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
+          {errorType && onRetry && (
+            <button type="button" className="retry-btn" onClick={onRetry}>
+              {t('ask.tryAgain')}
+            </button>
+          )}
         </div>
       </div>
     )

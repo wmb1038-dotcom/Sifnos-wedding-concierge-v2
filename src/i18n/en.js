@@ -318,6 +318,10 @@ export default {
     concierge: 'Cleo',
     confirmReset: 'Start a fresh conversation?',
     fallbackGreeting: "Hi! I'm Cleo — ask me anything about the wedding or Sifnos.",
+    errOffline: "Cleo needs a connection to think. The other tabs work offline — or check caroychris.com.",
+    errServer: "Cleo is taking a short break. Try again in a moment, or check caroychris.com.",
+    errRateLimit: "Cleo is a little overwhelmed right now — give it a moment.",
+    tryAgain: 'Try again',
     starters: [
       { q: "What's the schedule for the wedding day?",           label: 'Wedding schedule' },
       { q: 'Where is the venue and how do I get there?',         label: 'Venue & directions' },
