@@ -59,6 +59,11 @@ export default {
     forecastTitle: 'Pronóstico 5 días',
     forecastToday: 'Hoy',
     forecastWeddingDay: 'Día de la boda',
+    feelsLike: 'Sensacion',
+    precipChance: 'Lluvia',
+    gusts: 'rachas',
+    sunrise: 'Amanecer',
+    sunset: 'Atardecer',
     uv: {
       low: 'Bajo',
       moderate: 'Moderado',

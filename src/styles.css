@@ -872,6 +872,13 @@ em { font-style: italic; }
   min-width: 0;
   text-align: center;
   position: relative;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.forecast-day:hover { border-color: var(--terra-soft); }
+.forecast-selected {
+  border-color: var(--terra) !important;
+  background: color-mix(in srgb, var(--terra) 7%, var(--paper));
 }
 .fday-label {
   font-family: var(--sans);
@@ -978,17 +985,54 @@ em { font-style: italic; }
   50%       { opacity: 0.85; }
 }
 
-/* Forecast mobile: horizontal scroll on narrow screens */
+/* Forecast detail panel */
+.forecast-detail {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--parchment);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  animation: fd-in 160ms ease;
+}
+@keyframes fd-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+.fd-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+.fd-stat .icon { flex-shrink: 0; margin-top: 2px; }
+.fd-uv-pill {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Forecast mobile: compact sizing so all 5 cards fit without scrolling */
 @media (max-width: 500px) {
-  .card-forecast { padding: 18px 14px 14px; }
-  .forecast-days {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-  }
-  .forecast-days::-webkit-scrollbar { display: none; }
-  .forecast-day { min-width: 58px; flex-shrink: 0; }
+  .card-forecast { padding: 14px 12px 10px; }
+  .forecast-days { gap: 4px; }
+  .forecast-day { padding: 8px 3px 6px; gap: 2px; }
+  .fday-label { font-size: 8px; }
+  .fday-high { font-size: 13px; }
+  .fday-low { font-size: 11px; }
+  .fday-wind { font-size: 9px; }
+  .fday-uv { padding: 1px 3px; }
+  .fday-uv-num { font-size: 9px; }
+  .fday-uv-word { font-size: 7px; }
+  .fd-grid { grid-template-columns: 1fr; gap: 7px; }
 }
 
 /* Quick actions grid */

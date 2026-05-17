@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 const SIFNOS_LAT = 36.97
 const SIFNOS_LNG = 24.71
-const CACHE_KEY = 'sifnos_weather_v2'  // v2: shape now includes forecast[]
+const CACHE_KEY = 'sifnos_weather_v3'  // v3: forecast days include feels-like, precip, gusts, per-day sunrise/sunset
 const CACHE_TTL_MS = 30 * 60 * 1000  // 30 minutes
 
 const WMO_CODES = {
@@ -71,7 +71,7 @@ export function useWeather() {
           'https://api.open-meteo.com/v1/forecast',
           `?latitude=${SIFNOS_LAT}&longitude=${SIFNOS_LNG}`,
           '&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m',
-          '&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,sunset,sunrise,uv_index_max',
+          '&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,wind_speed_10m_max,wind_direction_10m_dominant,wind_gusts_10m_max,precipitation_probability_max,precipitation_sum,sunset,sunrise,uv_index_max',
           '&forecast_days=5',
           '&timezone=Europe%2FAthens',
         ].join('')
@@ -92,15 +92,25 @@ export function useWeather() {
           const dayCode = daily.weather_code?.[i] ?? 0
           const dayWmo = WMO_CODES[dayCode] || { label: 'Mild', icon: 'sun' }
           return {
-            date: isoDate,                // 'YYYY-MM-DD'
+            date: isoDate,
             condition: dayWmo.label,
             icon: dayWmo.icon,
-            maxTempC: Math.round(daily.temperature_2m_max?.[i]),
-            minTempC:  Math.round(daily.temperature_2m_min?.[i]),
-            windKmh:  Math.round(daily.wind_speed_10m_max?.[i]),
-            uvIndex: daily.uv_index_max?.[i] != null
+            maxTempC:    Math.round(daily.temperature_2m_max?.[i]),
+            minTempC:    Math.round(daily.temperature_2m_min?.[i]),
+            feelsMaxC:   Math.round(daily.apparent_temperature_max?.[i]),
+            feelsMinC:   Math.round(daily.apparent_temperature_min?.[i]),
+            windKmh:     Math.round(daily.wind_speed_10m_max?.[i]),
+            windDir:     compassDirection(daily.wind_direction_10m_dominant?.[i]),
+            windGustKmh: Math.round(daily.wind_gusts_10m_max?.[i]),
+            precipPct:   daily.precipitation_probability_max?.[i] ?? null,
+            precipMm:    daily.precipitation_sum?.[i] != null
+              ? Math.round(daily.precipitation_sum[i] * 10) / 10
+              : null,
+            uvIndex:     daily.uv_index_max?.[i] != null
               ? Math.round(daily.uv_index_max[i])
               : null,
+            sunriseIso:  daily.sunrise?.[i] ?? null,
+            sunsetIso:   daily.sunset?.[i] ?? null,
           }
         })
 

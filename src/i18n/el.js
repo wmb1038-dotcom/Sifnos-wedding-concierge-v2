@@ -59,6 +59,11 @@ export default {
     forecastTitle: 'Πρόγνωση 5 ημερών',
     forecastToday: 'Σήμερα',
     forecastWeddingDay: 'Ημέρα γάμου',
+    feelsLike: 'Αίσθηση',
+    precipChance: 'Βροχή',
+    gusts: 'ριπές',
+    sunrise: 'Ανατολή',
+    sunset: 'Δύση',
     uv: {
       low: 'Χαμηλή',
       moderate: 'Μέτρια',

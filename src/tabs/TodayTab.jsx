@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import PageHeader from '../components/PageHeader.jsx'
 import Icon from '../components/Icon.jsx'
 import AppFooter from '../components/AppFooter.jsx'
@@ -273,6 +273,11 @@ const WEDDING_DATE = '2026-09-04'
 function ForecastStrip({ weather, loading }) {
   const t = useT()
   const { locale } = useLocale()
+  const [selectedIdx, setSelectedIdx] = useState(null)
+
+  const toggleDay = useCallback(i => {
+    setSelectedIdx(prev => (prev === i ? null : i))
+  }, [])
 
   if (loading && !weather) {
     return (
@@ -301,18 +306,25 @@ function ForecastStrip({ weather, loading }) {
       <div className="forecast-days">
         {forecast.map((day, i) => {
           const isWedding = day.date === WEDDING_DATE
+          const isSelected = selectedIdx === i
           const dayLabel = i === 0
             ? t('today.forecastToday')
             : new Date(day.date + 'T12:00:00Z').toLocaleDateString(locale, { weekday: 'short' })
           const band = uvBand(day.uvIndex)
           return (
-            <div key={day.date} className={`forecast-day${isWedding ? ' forecast-wedding' : ''}`}>
+            <button
+              key={day.date}
+              type="button"
+              className={`forecast-day${isWedding ? ' forecast-wedding' : ''}${isSelected ? ' forecast-selected' : ''}`}
+              onClick={() => toggleDay(i)}
+              aria-expanded={isSelected}
+            >
               {isWedding && (
                 <p className="fday-wedding-tag">{t('today.forecastWeddingDay')}</p>
               )}
               <p className="fday-label">{dayLabel}</p>
               <div className="fday-icon">
-                <Icon name={day.icon} size={28} strokeWidth={1.4} />
+                <Icon name={day.icon} size={24} strokeWidth={1.4} />
               </div>
               <div className="fday-temps">
                 <span className="fday-high">{day.maxTempC}°</span>
@@ -328,11 +340,70 @@ function ForecastStrip({ weather, loading }) {
                   <span className="fday-uv-word">{t(`today.uv.${band}`)}</span>
                 </div>
               )}
-            </div>
+            </button>
           )
         })}
       </div>
+      {selectedIdx !== null && forecast[selectedIdx] && (
+        <ForecastDetail day={forecast[selectedIdx]} />
+      )}
     </section>
+  )
+}
+
+function ForecastDetail({ day }) {
+  const t = useT()
+  const sunriseTime = sunTimeStr(day.sunriseIso)
+  const sunsetTime  = sunTimeStr(day.sunsetIso)
+  const band = uvBand(day.uvIndex)
+
+  return (
+    <div className="forecast-detail">
+      <div className="fd-grid">
+        {day.feelsMaxC != null && (
+          <div className="fd-stat">
+            <Icon name="sun" size={13} />
+            <span>{t('today.feelsLike')} {day.feelsMaxC}° / {day.feelsMinC}°</span>
+          </div>
+        )}
+        {day.precipPct != null && (
+          <div className="fd-stat">
+            <Icon name="rain" size={13} />
+            <span>
+              {t('today.precipChance')} {day.precipPct}%
+              {day.precipMm > 0 && ` · ${day.precipMm} mm`}
+            </span>
+          </div>
+        )}
+        {day.windKmh != null && (
+          <div className="fd-stat">
+            <Icon name="wind" size={13} />
+            <span>
+              {day.windKmh} km/h {day.windDir}
+              {day.windGustKmh != null && <> · {t('today.gusts')} {day.windGustKmh}</>}
+            </span>
+          </div>
+        )}
+        {day.uvIndex != null && (
+          <div className="fd-stat">
+            <Icon name="sun" size={13} />
+            <span>UV {day.uvIndex} · <span className={`fd-uv-pill uv-${band}`}>{t(`today.uv.${band}`)}</span></span>
+          </div>
+        )}
+        {sunriseTime && (
+          <div className="fd-stat">
+            <Icon name="sunrise" size={13} />
+            <span>{t('today.sunrise')} {sunriseTime}</span>
+          </div>
+        )}
+        {sunsetTime && (
+          <div className="fd-stat">
+            <Icon name="sunset" size={13} />
+            <span>{t('today.sunset')} {sunsetTime}</span>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
