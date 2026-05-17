@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: deep ink blue -->
+  <rect width="512" height="512" fill="#1a2738"/>
+
+  <!-- Cross atop dome -->
+  <rect x="249" y="108" width="14" height="72" rx="3" fill="#fbf8f1"/>
+  <rect x="227" y="126" width="58" height="12" rx="3" fill="#fbf8f1"/>
+
+  <!-- Dome (upper semicircle, radius 88, base at y=260) -->
+  <path d="M 168 260 A 88 88 0 0 0 344 260 Z" fill="#fbf8f1"/>
+
+  <!-- Walls -->
+  <rect x="168" y="260" width="176" height="120" fill="#fbf8f1"/>
+
+  <!-- Arched doorway (ink cutout, centered at x=256, arch radius 40) -->
+  <path d="M 216 380 L 216 316 A 40 40 0 0 0 296 316 L 296 380 Z" fill="#1a2738"/>
+
+  <!-- Aegean: three terracotta sea lines -->
+  <line x1="80"  y1="416" x2="432" y2="416" stroke="#c97b5b" stroke-width="5"   stroke-linecap="round" opacity="0.70"/>
+  <line x1="108" y1="432" x2="404" y2="432" stroke="#c97b5b" stroke-width="3.5" stroke-linecap="round" opacity="0.45"/>
+  <line x1="136" y1="447" x2="376" y2="447" stroke="#c97b5b" stroke-width="2.5" stroke-linecap="round" opacity="0.22"/>
+</svg>

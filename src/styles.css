@@ -34,6 +34,7 @@
 
   /* Sizing */
   --maxw: 760px;
+  --radius:    14px;
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
@@ -1927,6 +1928,38 @@ em { font-style: italic; }
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* ============================================================
+   OFFLINE BANNER
+   ============================================================ */
+
+.offline-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  background: var(--ink);
+  color: var(--paper-soft);
+  padding: 10px 20px;
+  font-family: var(--sans);
+  font-size: 13px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(26,39,56,.35);
+  animation: offline-slide-in 280ms ease-out;
+}
+@keyframes offline-slide-in {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.offline-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--terra);
+  flex-shrink: 0;
 }
 
 /* ============================================================

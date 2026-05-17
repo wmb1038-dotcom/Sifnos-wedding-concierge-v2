@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import LockScreen from './components/LockScreen.jsx'
+import OfflineBanner from './components/OfflineBanner.jsx'
 import TabBar from './components/TabBar.jsx'
 import TodayTab from './tabs/TodayTab.jsx'
 import WeddingTab from './tabs/WeddingTab.jsx'
@@ -69,6 +70,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <OfflineBanner />
       <main className="app-main">
         {activeTab === 'today'   && <TodayTab   onAsk={goToAskWith} setTab={setActiveTab} />}
         {activeTab === 'wedding' && <WeddingTab onAsk={goToAskWith} />}
