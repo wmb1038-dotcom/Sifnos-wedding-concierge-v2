@@ -1810,6 +1810,62 @@ em { font-style: italic; }
   margin-top: 0;
 }
 
+.cleo-avatar-trigger {
+  position: relative;
+  cursor: pointer;
+  border-radius: 50%;
+  outline: none;
+}
+.cleo-avatar-trigger:focus-visible { box-shadow: 0 0 0 3px rgba(201,123,91,.35); }
+
+.cleo-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px 12px;
+  box-shadow: 0 8px 32px rgba(26,39,56,.18);
+  z-index: 200;
+  width: 148px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.cleo-popover .cleo-avatar--lg { margin-bottom: 8px; }
+.cleo-popover-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 2px;
+}
+.cleo-popover-tag {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--terra);
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .cleo-avatar-trigger:hover .cleo-popover {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+}
+.cleo-avatar-trigger.open .cleo-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
 .typing {
   align-self: flex-start;
   background: var(--paper);

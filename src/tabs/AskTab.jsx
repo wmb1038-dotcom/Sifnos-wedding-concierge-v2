@@ -17,12 +17,27 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
   const [sending, setSending] = useState(false)
   const [throttled, setThrottled] = useState(false)
   const [hasGreeted, setHasGreeted] = useState(false)
+  const [cleoOpen, setCleoOpen] = useState(false)
+  const cleoTriggerRef = useRef(null)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const textareaRef = useRef(null)
   const throttleTimer = useRef(null)
 
   useEffect(() => () => clearTimeout(throttleTimer.current), [])
+
+  useEffect(() => {
+    if (!cleoOpen) return
+    const close = (e) => {
+      if (!cleoTriggerRef.current?.contains(e.target)) setCleoOpen(false)
+    }
+    document.addEventListener('mousedown', close)
+    document.addEventListener('touchstart', close)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      document.removeEventListener('touchstart', close)
+    }
+  }, [cleoOpen])
 
   // First-time greeting (fires once consent is given)
   useEffect(() => {
@@ -156,7 +171,22 @@ export default function AskTab({ rsvpCode, seedContext, clearSeed }) {
         subtitle={t('ask.subtitle')}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CleoAvatar size="sm" />
+          <div
+            ref={cleoTriggerRef}
+            className={`cleo-avatar-trigger${cleoOpen ? ' open' : ''}`}
+            onClick={() => setCleoOpen(o => !o)}
+            role="button"
+            tabIndex={0}
+            aria-label="Meet Cleo"
+            onKeyDown={(e) => e.key === 'Enter' && setCleoOpen(o => !o)}
+          >
+            <CleoAvatar size="sm" />
+            <div className="cleo-popover" aria-hidden={!cleoOpen}>
+              <CleoAvatar size="lg" />
+              <p className="cleo-popover-name">Cleo</p>
+              <p className="cleo-popover-tag">Wedding Concierge</p>
+            </div>
+          </div>
           <button className="reset-btn" onClick={reset} aria-label={t('ask.startOver')} title={t('ask.startFresh')}>
             <Icon name="ask" size={14} /> {t('ask.startOver')}
           </button>
