@@ -19,6 +19,28 @@ const ICONS = {
     <path d="M17 14h-9a4 4 0 0 1 0-8 5 5 0 0 1 9.5-1A4 4 0 0 1 17 14z" />
     <path d="M11 16l-2 4h3l-1 3" />
   </>,
+  fog: <>
+    <path d="M4 7h14a4 4 0 0 0-4-4 5 5 0 0 0-9.5 1.5A3 3 0 0 0 4 7z" />
+    <path d="M3 12h18M3 16h14M5 20h10" />
+  </>,
+  sunrise: <>
+    <path d="M2 17h20" />
+    <path d="M6.3 17a5.7 5.7 0 0 1 11.4 0" />
+    <path d="M12 11V8M9.5 10.5l2.5-2.5 2.5 2.5" />
+  </>,
+  sunset: <>
+    <path d="M2 17h20" />
+    <path d="M6.3 17a5.7 5.7 0 0 1 11.4 0" />
+    <path d="M12 8v3M9.5 13.5l2.5 2.5 2.5-2.5" />
+  </>,
+  snow: <>
+    <path d="M17 13h-9a4 4 0 0 1 0-8 5 5 0 0 1 9.5-1A4 4 0 0 1 17 13z" />
+    <circle cx="8"  cy="17.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="16.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="16" cy="17.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="10" cy="20.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="14" cy="20.5" r="1" fill="currentColor" stroke="none" />
+  </>,
   glass: <>
     <path d="M8 4h8l-1 8a3 3 0 0 1-6 0z" />
     <path d="M12 12v6M9 21h6" />

@@ -6,7 +6,7 @@ import { SCHEDULE, VENUE, TAGLINE } from '../data/wedding.js'
 import { timeUntil, currentEvent, nextEvent, weddingIsOver, formatRange, tripPhase } from '../lib/schedule.js'
 import { useWeather } from '../lib/weather.js'
 import { CULTURE } from '../data/culture.js'
-import { useT } from '../i18n/index.jsx'
+import { useT, useLocale } from '../i18n/index.jsx'
 
 export default function TodayTab({ onAsk, setTab }) {
   const t = useT()
@@ -22,6 +22,8 @@ export default function TodayTab({ onAsk, setTab }) {
   const ceremony = SCHEDULE.find(e => e.id === 'ceremony')
   const ceremonyCountdown = timeUntil(ceremony.start, now)
   const isOver = weddingIsOver(now)
+
+  const { weather, loading } = useWeather()
 
   return (
     <div className="page page-today">
@@ -39,7 +41,9 @@ export default function TodayTab({ onAsk, setTab }) {
         isOver={isOver}
       />
 
-      <WeatherCard />
+      <ForecastStrip weather={weather} loading={loading} />
+
+      <WeatherCard weather={weather} loading={loading} />
 
       <section className="card card-quick">
         <h2 className="card-title">{t('today.quickTaps')}</h2>
@@ -142,9 +146,19 @@ function CountdownDisplay({ countdown }) {
   )
 }
 
-function WeatherCard() {
+// Open-Meteo returns Athens-local timestamps with no UTC offset (e.g. "2026-09-04T06:51").
+// Using new Date() on these would misinterpret the hour as device-local time, then double-convert
+// to Athens — wrong on any device outside UTC+3. Slice the HH:MM directly instead.
+function sunTimeStr(iso) {
+  if (!iso) return null
+  const [h, m] = iso.slice(11, 16).split(':').map(Number)
+  const ampm = h >= 12 ? 'pm' : 'am'
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${h12}:${String(m).padStart(2, '0')}${ampm}`
+}
+
+function WeatherCard({ weather, loading }) {
   const t = useT()
-  const { weather, loading } = useWeather()
   if (loading || !weather) {
     return (
       <section className="card card-weather loading">
@@ -154,9 +168,8 @@ function WeatherCard() {
     )
   }
 
-  const sunsetTime = weather.sunsetIso
-    ? new Date(weather.sunsetIso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'Europe/Athens' }).toLowerCase().replace(' ', '')
-    : null
+  const sunriseTime = sunTimeStr(weather.sunriseIso)
+  const sunsetTime  = sunTimeStr(weather.sunsetIso)
 
   return (
     <section className="card card-weather">
@@ -173,9 +186,15 @@ function WeatherCard() {
           <Icon name="wind" size={14} />
           <span>{weather.windKmh} km/h {weather.windDirection}{weather.isMeltemi ? ' · meltemi' : ''}</span>
         </div>
+        {sunriseTime && (
+          <div className="weather-stat">
+            <Icon name="sunrise" size={14} />
+            <span>Sunrise {sunriseTime}</span>
+          </div>
+        )}
         {sunsetTime && (
           <div className="weather-stat">
-            <Icon name="sun" size={14} />
+            <Icon name="sunset" size={14} />
             <span>Sunset {sunsetTime}</span>
           </div>
         )}
@@ -236,6 +255,82 @@ function DidYouKnowCard({ onAsk }) {
         <button className="card-cta" onClick={() => onAsk(`Tell me more about: ${card.title}`, `culture-${card.id}`)}>
           {t('sifnos.culture.askAbout')} <Icon name="chat" size={14} />
         </button>
+      </div>
+    </section>
+  )
+}
+
+function uvBand(uv) {
+  if (uv == null || uv <= 2) return 'low'
+  if (uv <= 5)               return 'moderate'
+  if (uv <= 7)               return 'high'
+  if (uv <= 10)              return 'very-high'
+  return 'extreme'
+}
+
+const WEDDING_DATE = '2026-09-04'
+
+function ForecastStrip({ weather, loading }) {
+  const t = useT()
+  const { locale } = useLocale()
+
+  if (loading && !weather) {
+    return (
+      <div className="card card-forecast" aria-busy="true">
+        <div className="forecast-days">
+          {[0, 1, 2, 3, 4].map(i => (
+            <div key={i} className="forecast-day">
+              <div className="skel skel-label" />
+              <div className="skel skel-icon" />
+              <div className="skel skel-temps" />
+              <div className="skel skel-sm" />
+              <div className="skel skel-sm" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const forecast = weather?.forecast
+  if (!forecast?.length) return null
+
+  return (
+    <section className="card card-forecast">
+      <p className="forecast-heading">{t('today.forecastTitle')}</p>
+      <div className="forecast-days">
+        {forecast.map((day, i) => {
+          const isWedding = day.date === WEDDING_DATE
+          const dayLabel = i === 0
+            ? t('today.forecastToday')
+            : new Date(day.date + 'T12:00:00Z').toLocaleDateString(locale, { weekday: 'short' })
+          const band = uvBand(day.uvIndex)
+          return (
+            <div key={day.date} className={`forecast-day${isWedding ? ' forecast-wedding' : ''}`}>
+              {isWedding && (
+                <p className="fday-wedding-tag">{t('today.forecastWeddingDay')}</p>
+              )}
+              <p className="fday-label">{dayLabel}</p>
+              <div className="fday-icon">
+                <Icon name={day.icon} size={28} strokeWidth={1.4} />
+              </div>
+              <div className="fday-temps">
+                <span className="fday-high">{day.maxTempC}°</span>
+                <span className="fday-low">{day.minTempC}°</span>
+              </div>
+              <div className="fday-wind">
+                <Icon name="wind" size={10} strokeWidth={1.8} />
+                <span>{day.windKmh}</span>
+              </div>
+              {day.uvIndex != null && (
+                <div className={`fday-uv uv-${band}`}>
+                  <span className="fday-uv-num">{day.uvIndex}</span>
+                  <span className="fday-uv-word">{t(`today.uv.${band}`)}</span>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </section>
   )
